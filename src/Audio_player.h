@@ -45,11 +45,11 @@ private:
   QAudioFormat target_format;
   QAudioDecoder *audio_decoder;
   std::unique_ptr<QVector<QAudioBuffer>> decoded_samples;
-  int nb_audio_buffers;
+  qsizetype nb_audio_buffers;
   QAudioOutput *audio_output;
   QIODevice *output_buffer;
   QBuffer *temp_buffer;
-  int reading_index;
+  qsizetype reading_index;
   bool no_more_data;
   std::unique_ptr<RubberBand::RubberBandStretcher> stretcher;
   
