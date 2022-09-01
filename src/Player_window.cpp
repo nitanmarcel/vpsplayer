@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QFont>
 #include <QGridLayout>
+#include <QComboBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QKeySequence>
@@ -216,7 +217,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
   connect(slider_volume, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateVolume);
-  connect(combobox_engine, &QComboBox::currentIndexChanged, [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
+  connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
   connect(check_high_quality, &QAbstractButton::toggled, audio_player, &AudioPlayer::updateOptionHighQuality);
   connect(check_formant_preserved, &QAbstractButton::toggled, audio_player, &AudioPlayer::updateOptionFormantPreserved);
   connect(audio_player, &AudioPlayer::statusChanged, this, &PlayerWindow::updateStatus);
