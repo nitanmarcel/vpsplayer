@@ -77,7 +77,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   slider_pitch->setTickPosition(QSlider::TicksAbove);
   slider_pitch->setRange(-12, 12);
   slider_pitch->setSingleStep(1);
-  slider_pitch->setPageStep(2);
+  slider_pitch->setPageStep(1);
   slider_pitch->setTickInterval(12);
   QSlider *slider_speed = new QSlider;
   slider_speed->setOrientation(Qt::Horizontal);
