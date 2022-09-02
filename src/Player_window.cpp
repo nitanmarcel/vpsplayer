@@ -99,7 +99,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_sliders->addWidget(label_speed_value, 1, 2);
   QVBoxLayout *layout_settings = new QVBoxLayout;
   layout_settings->addLayout(layout_sliders);
-  QGroupBox *groupbox_settings = new QGroupBox("Settings");
+  QGroupBox *groupbox_settings = new QGroupBox();
   groupbox_settings->setLayout(layout_settings);
   
   button_open = new QPushButton(open_icon, "Open file");
@@ -140,7 +140,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_player->addLayout(layout_buttons);
   layout_player->addLayout(layout_buttons2);
   layout_player->addLayout(layout_progress);
-  QGroupBox *groupbox_player = new QGroupBox("Player");
+  QGroupBox *groupbox_player = new QGroupBox("");
   groupbox_player->setLayout(layout_player);
   
   QVBoxLayout *layout_main = new QVBoxLayout;
