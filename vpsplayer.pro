@@ -17,7 +17,7 @@ SOURCES = src/main.cpp \
           src/Playing_progress.cpp \
           src/settingsdialog.cpp \
           src/tools.cpp
-RESOURCES = icons.qrc
+RESOURCES = icons.qrc styles.qrc
 TARGET = vpsplayer
 
 isEmpty(PREFIX) {
@@ -42,3 +42,4 @@ appinfo.path = $$PREFIX/share/metainfo
 appinfo.files = com.github.fcrollet.vpsplayer.appdata.xml
 
 INSTALLS += target documentation icon64 icon128 desktop appinfo
+

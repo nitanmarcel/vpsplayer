@@ -11,6 +11,7 @@
 #include <QIcon>
 #include <QString>
 #include <QStringList>
+#include <QFile>
 
 #include "Player_window.h"
 
@@ -22,7 +23,12 @@ int main(int argc, char *argv[])
   QCoreApplication::setApplicationVersion(QStringLiteral(VERSION_STRING));
   const QIcon app_icon(QStringLiteral(":/vps-64.png"));
   app.setWindowIcon(app_icon);
-  
+
+  QFile stylesheet_file(":/default.qss");
+  stylesheet_file.open(QFile::ReadOnly);
+  QString styleSheet = QLatin1String(stylesheet_file.readAll());
+  app.setStyleSheet(styleSheet);
+
   QString filename;
   {
     QCommandLineParser parser;
