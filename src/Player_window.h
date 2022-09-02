@@ -10,8 +10,6 @@
 
 #include <QMainWindow>
 #include <QAction>
-#include <QCheckBox>
-#include <QComboBox>
 #include <QFileInfo>
 #include <QIcon>
 #include <QLabel>
@@ -22,6 +20,7 @@
 
 #include "Audio_player.h"
 #include "Playing_progress.h"
+#include "settingsdialog.h"
 
 
 class PlayerWindow : public QMainWindow
@@ -42,14 +41,13 @@ private:
   QPushButton *button_fwd10;
   QSpinBox *spinbox_pitch;
   QLabel *label_speed_value;
-  QComboBox *combobox_engine;
-  QCheckBox *check_high_quality;
   PlayingProgress *progress_playing;
   QLabel *label_reading_progress;
   QLabel *label_duration;
   QLabel *label_status;
   QLabel *label_loading_progress;
   QString music_directory;
+  SettingsDialog *settings_dialog;
   
 public:
   PlayerWindow(const QIcon &app_icon, const QString &filename = QString()); // Constructor
@@ -63,6 +61,7 @@ private:
   void playAudio(); // Start or resume audio playing
   void moveReadingPosition(int delta); // Moves reading position backward or forward. Parameter: position change in milliseconds
   void showAbout(); // Displays "About" dialog window
+  void showSettings(); // Displays "Settings" dialog window
   void updateDuration(int duration); // Updates total file duration
   void updatePitch(int pitch); // Updates the pitch
   void updateReadingPosition(int position); // Updates current reading position

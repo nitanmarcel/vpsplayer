@@ -6,7 +6,6 @@
 // You should have received a copy of the GNU General Public License along with VPS Player. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QToolTip>
-
 #include "Playing_progress.h"
 #include "tools.h"
 
