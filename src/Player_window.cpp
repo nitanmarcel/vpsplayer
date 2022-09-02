@@ -70,8 +70,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   label_pitch->setAlignment(Qt::AlignRight);
   QLabel *label_speed = new QLabel("Speed");
   label_speed->setAlignment(Qt::AlignRight);
-  QLabel *label_volume = new QLabel("Volume");
-  label_volume->setAlignment(Qt::AlignRight);
   QSlider *slider_pitch = new QSlider;
   slider_pitch->setOrientation(Qt::Horizontal);
   slider_pitch->setTickPosition(QSlider::TicksAbove);
@@ -86,28 +84,17 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   slider_speed->setSingleStep(1);
   slider_speed->setPageStep(4);
   slider_speed->setTickInterval(12);
-  QSlider *slider_volume = new QSlider;
-  slider_volume->setOrientation(Qt::Horizontal);
-  slider_volume->setTickPosition(QSlider::TicksAbove);
-  slider_volume->setRange(0, 100);
-  slider_volume->setSingleStep(1);
-  slider_volume->setPageStep(10);
-  slider_volume->setTickInterval(100);
   spinbox_pitch = new QSpinBox;
   spinbox_pitch->setRange(-12, 12);
   label_speed_value = new QLabel;
   label_speed_value->setAlignment(Qt::AlignCenter);
-  lcd_volume = new QLCDNumber(3);
   QGridLayout *layout_sliders = new QGridLayout;
   layout_sliders->addWidget(label_pitch, 0, 0);
   layout_sliders->addWidget(label_speed, 1, 0);
-  layout_sliders->addWidget(label_volume, 2, 0);
   layout_sliders->addWidget(slider_pitch, 0, 1);
   layout_sliders->addWidget(slider_speed, 1, 1);
-  layout_sliders->addWidget(slider_volume, 2, 1);
   layout_sliders->addWidget(spinbox_pitch, 0, 2);
   layout_sliders->addWidget(label_speed_value, 1, 2);
-  layout_sliders->addWidget(lcd_volume, 2, 2);
 
   QLabel *label_engine = new QLabel("Engine");
   combobox_engine = new QComboBox;
@@ -183,8 +170,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   updatePitch(0);
   slider_speed->setValue(0);
   updateSpeed(0);
-  slider_volume->setValue(100);
-  updateVolume(100);
   combobox_engine->setCurrentIndex(1);
   audio_player->updateOptionUseR3Engine(true);
   check_high_quality->setChecked(true);
@@ -216,7 +201,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(spinbox_pitch, qOverload<int>(&QSpinBox::valueChanged), slider_pitch, &QAbstractSlider::setValue);
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
-  connect(slider_volume, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateVolume);
   connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
   connect(check_high_quality, &QAbstractButton::toggled, audio_player, &AudioPlayer::updateOptionHighQuality);
   connect(check_formant_preserved, &QAbstractButton::toggled, audio_player, &AudioPlayer::updateOptionFormantPreserved);
@@ -432,14 +416,6 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     set_controls("Playing", true, false, true, false, true, false);
     break;
   }
-}
-
-
-// Updates the volume
-void PlayerWindow::updateVolume(int volume)
-{
-  lcd_volume->display(volume);
-  audio_player->updateVolume(QAudio::convertVolume(volume / qreal(100.0), QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale));
 }
 
 

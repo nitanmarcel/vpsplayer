@@ -42,7 +42,6 @@ private:
   QPushButton *button_fwd10;
   QSpinBox *spinbox_pitch;
   QLabel *label_speed_value;
-  QLCDNumber *lcd_volume;
   QComboBox *combobox_engine;
   QCheckBox *check_high_quality;
   PlayingProgress *progress_playing;
@@ -69,7 +68,6 @@ private:
   void updateReadingPosition(int position); // Updates current reading position
   void updateSpeed(int speed); // Updates the speed
   void updateStatus(AudioPlayer::Status status); // Updates the window based on the player status
-  void updateVolume(int volume); // Updates the volume
 protected:
   void dragEnterEvent(QDragEnterEvent *e);
   void dropEvent(QDropEvent *e);
