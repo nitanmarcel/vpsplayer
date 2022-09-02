@@ -24,7 +24,6 @@
 #include <QStringList>
 #include <QVBoxLayout>
 #include <QMainWindow>
-#include <QDebug>
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QDragEnterEvent>
@@ -82,10 +81,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   QSlider *slider_speed = new QSlider;
   slider_speed->setOrientation(Qt::Horizontal);
   slider_speed->setTickPosition(QSlider::TicksAbove);
-  slider_speed->setRange(-12, 12);
+  slider_speed->setRange(-24, 24);
   slider_speed->setSingleStep(1);
-  slider_speed->setPageStep(4);
-  slider_speed->setTickInterval(12);
+  slider_speed->setPageStep(1);
+  slider_speed->setTickInterval(24);
   spinbox_pitch = new QSpinBox;
   spinbox_pitch->setRange(-12, 12);
   label_speed_value = new QLabel;
@@ -361,7 +360,7 @@ void PlayerWindow::updateReadingPosition(int position)
 // Updates the speed
 void PlayerWindow::updateSpeed(int speed)
 {
-  qreal speed_ratio = qPow(qreal(2.0), speed / qreal(12.0));
+  qreal speed_ratio = qPow(qreal(2.0), speed / qreal(24.0));
   label_speed_value->setText(QStringLiteral("x %1").arg(speed_ratio, 0, 'f', 2));
   audio_player->updateSpeed(static_cast<double>(speed_ratio));
 }
