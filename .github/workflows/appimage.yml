@@ -4,10 +4,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: 
-      image: ubuntu:18.04
-      options: --security-opt apparmor:unconfined --cap-add SYS_ADMIN --device /dev/fuse
+    runs-on: ubuntu:18.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
