@@ -1,0 +1,13 @@
+image: ubuntu:18.04
+
+variables:
+  GITLAB_CI: "true"
+
+build:
+  stage: build
+  script:
+    ./generate_appimage_ci.sh
+  timeout: 3 hours 30 minutes
+  artifacts:
+    paths:
+      - VPS_Player-x86_64.AppImage
