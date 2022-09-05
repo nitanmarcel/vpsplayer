@@ -444,12 +444,20 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Space)
     {
-        qDebug() << "Key pressed";
-
         if (button_play->isEnabled())
             button_play->click();
         else if (button_pause->isEnabled())
             button_pause->click();
+    }
+    else if (e->key() == Qt::Key_Right)
+    {
+        if (button_fwd5->isEnabled())
+            button_fwd5->click();
+    }
+    else if (e->key() == Qt::Key_Left)
+    {
+        if (button_bwd5->isEnabled())
+            button_bwd5->click();
     }
 }
 
