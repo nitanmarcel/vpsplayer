@@ -91,21 +91,21 @@ jobs:
 
           ./linuxdeploy-x86_64.AppImage --plugin qt --appdir AppDir --desktop-file AppDir/usr/share/applications/com.github.fcrollet.vpsplayer.desktop
           ./linuxdeploy-x86_64.AppImage --plugin gstreamer --appdir AppDir --desktop-file AppDir/usr/share/applications/com.github.fcrollet.vpsplayer.desktop
-          
-          # Remove uneeded libraries
-          rm AppDir/usr/lib/libgobject-2.0.so.0
-          rm AppDir/usr/lib/libgmodule-2.0.so.0
-          rm AppDir/usr/lib/libglib-2.0.so.0
-          rm AppDir/usr/lib/libgio-2.0.so.0
-          
           ./appimagetool-x86_64.AppImage AppDir -n
       - name: Create AppImage
         run: |
           ./linuxdeploy-x86_64.AppImage -p qt --appdir AppDir
-      - name: Get short SHA
-        uses: benjlevesque/short-sha@v1.2
-        with:
-          length: 6
+      - name: Patch glib from AppImage
+        run: |
+          chmod a+x VPS_Player-x86_64.AppImage
+
+          ./VPS_Player-x86_64.AppImage --appimage-extract
+          rm squashfs-root/usr/lib/libgobject-2.0.so.0
+          rm squashfs-root/usr/lib/libgmodule-2.0.so.0
+          rm squashfs-root/usr/lib/libglib-2.0.so.0
+          rm squashfs-root/usr/lib/libgio-2.0.so.0
+
+          ./appimagetool-x86_64.AppImage squashfs-root -n
       - name: Delete old alpha release
         uses: dev-drprasad/delete-tag-and-release@v0.1.3
         with:
