@@ -14,6 +14,8 @@
 PlayingProgress::PlayingProgress(QWidget *parent) : QProgressBar(parent),
 						    is_clickable(false)
 {
+  clearFocus();
+  setFocusPolicy(Qt::NoFocus);
   setTextVisible(false);
 }
 

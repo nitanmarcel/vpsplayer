@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QString>
+#include <QKeyEvent>
 
 #include "Audio_player.h"
 #include "Playing_progress.h"
@@ -70,6 +71,7 @@ private:
 protected:
   void dragEnterEvent(QDragEnterEvent *e);
   void dropEvent(QDropEvent *e);
+  void keyPressEvent(QKeyEvent *event);
 
 };
 

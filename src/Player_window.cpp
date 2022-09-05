@@ -28,7 +28,6 @@
 #include <QMimeDatabase>
 #include <QDragEnterEvent>
 
-
 #include "Player_window.h"
 #include "settingsdialog.h"
 #include "tools.h"
@@ -37,6 +36,8 @@
 // Constructor
 PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 {
+  clearFocus();
+  setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
 
   const QIcon open_icon(QStringLiteral(":/open-32.png"));
@@ -72,6 +73,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   QLabel *label_speed = new QLabel("Speed");
   label_speed->setAlignment(Qt::AlignRight);
   QSlider *slider_pitch = new QSlider;
+  slider_pitch->setFocusPolicy(Qt::NoFocus);
   slider_pitch->setOrientation(Qt::Horizontal);
   slider_pitch->setTickPosition(QSlider::TicksAbove);
   slider_pitch->setRange(-12, 12);
@@ -79,6 +81,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   slider_pitch->setPageStep(1);
   slider_pitch->setTickInterval(12);
   QSlider *slider_speed = new QSlider;
+  slider_speed->setFocusPolicy(Qt::NoFocus);
   slider_speed->setOrientation(Qt::Horizontal);
   slider_speed->setTickPosition(QSlider::TicksAbove);
   slider_speed->setRange(-24, 24);
@@ -86,6 +89,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   slider_speed->setPageStep(1);
   slider_speed->setTickInterval(24);
   spinbox_pitch = new QSpinBox;
+  spinbox_pitch->setFocusPolicy(Qt::NoFocus);
   spinbox_pitch->setRange(-12, 12);
   label_speed_value = new QLabel;
   label_speed_value->setAlignment(Qt::AlignCenter);
@@ -102,11 +106,16 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   groupbox_settings->setLayout(layout_settings);
   
   button_open = new QPushButton(open_icon, "Open file");
+  button_open->setFocusPolicy(Qt::NoFocus);
   button_open->setToolTip(QStringLiteral("Ctrl+O"));
   button_cancel = new QPushButton(QIcon(QStringLiteral(":/cancel-32.png")), "Cancel");
+  button_cancel->setFocusPolicy(Qt::NoFocus);
   button_play = new QPushButton(QIcon(QStringLiteral(":/play-32.png")), "Play");
+  button_play->setFocusPolicy(Qt::NoFocus);
   button_pause = new QPushButton(QIcon(QStringLiteral(":/pause-32.png")), "Pause");
+  button_pause->setFocusPolicy(Qt::NoFocus);
   button_stop = new QPushButton(QIcon(QStringLiteral(":/stop-32.png")), "Stop");
+  button_stop->setFocusPolicy(Qt::NoFocus);
   QHBoxLayout *layout_buttons = new QHBoxLayout;
   layout_buttons->addWidget(button_open);
   layout_buttons->addWidget(button_cancel);
@@ -115,9 +124,13 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_buttons->addWidget(button_stop);
 
   button_bwd10 = new QPushButton(backward_icon, QStringLiteral("-10s"));
+  button_bwd10->setFocusPolicy(Qt::NoFocus);
   button_bwd5 = new QPushButton(backward_icon, QStringLiteral("-5s"));
+  button_bwd5->setFocusPolicy(Qt::NoFocus);
   button_fwd5 = new QPushButton(forward_icon, QStringLiteral("+5s"));
+  button_fwd5->setFocusPolicy(Qt::NoFocus);
   button_fwd10 = new QPushButton(forward_icon, QStringLiteral("+10s"));
+  button_fwd10->setFocusPolicy(Qt::NoFocus);
   QHBoxLayout *layout_buttons2 = new QHBoxLayout;
   layout_buttons2->addWidget(button_bwd10);
   layout_buttons2->addWidget(button_bwd5);
@@ -126,6 +139,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_buttons2->addWidget(button_fwd10);
 
   progress_playing = new PlayingProgress;
+  progress_playing->setFocusPolicy(Qt::NoFocus);
   label_reading_progress = new QLabel;
   label_reading_progress->setFont(fixed_font);
   label_duration = new QLabel;
@@ -424,5 +438,18 @@ void PlayerWindow::dropEvent(QDropEvent *e)
 {
     QFileInfo file(e->mimeData()->urls()[0].path());
     openFile(file);
+}
+
+void PlayerWindow::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Space)
+    {
+        qDebug() << "Key pressed";
+
+        if (button_play->isEnabled())
+            button_play->click();
+        else if (button_pause->isEnabled())
+            button_pause->click();
+    }
 }
 
