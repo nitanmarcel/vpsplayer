@@ -1,6 +1,7 @@
 TEMPLATE = app
 CONFIG += qt warn_on release link_pkgconfig c++14 exceptions_off
 QT += widgets multimedia
+LIBS += -lwaveformwidget
 PKGCONFIG += rubberband
 DEFINES += VERSION_STRING=\\\"1.0.4\\\"
 MOC_DIR = build_tmp
@@ -10,13 +11,15 @@ HEADERS = src/Audio_player.h \
           src/Player_window.h \
           src/Playing_progress.h \
           src/settingsdialog.h \
-          src/tools.h
+          src/tools.h \
+          src/waveconvert.h
 SOURCES = src/main.cpp \
           src/Audio_player.cpp \
           src/Player_window.cpp \
           src/Playing_progress.cpp \
           src/settingsdialog.cpp \
-          src/tools.cpp
+          src/tools.cpp \
+          src/waveconvert.cpp
 RESOURCES = icons.qrc styles.qrc
 TARGET = vpsplayer
 

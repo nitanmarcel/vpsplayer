@@ -18,10 +18,12 @@
 #include <QSpinBox>
 #include <QString>
 #include <QKeyEvent>
+#include <WaveformWidget.h>
 
 #include "Audio_player.h"
 #include "Playing_progress.h"
 #include "settingsdialog.h"
+#include "waveconvert.h"
 
 
 class PlayerWindow : public QMainWindow
@@ -49,6 +51,8 @@ private:
   QLabel *label_loading_progress;
   QString music_directory;
   SettingsDialog *settings_dialog;
+  WaveformWidget *widget_waveform;
+  WaveConvert *wave_converter;
 
   int playback_speed;
   int pitch_value;

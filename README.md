@@ -11,8 +11,10 @@ See COPYING in the same directory or [http://www.gnu.org/licenses/gpl.html](http
 
 ## Requirements
 
-* **Qt5** (version 5.8 or above; *core*, *gui*/*widgets* and *multimedia* modules): [https://www.qt.io](https://www.qt.io)
+* **Qt5** (version 5.15 or above; *core*, *gui*/*widgets* and *multimedia* modules): [https://www.qt.io](https://www.qt.io)
 * **Rubberband** library (version 3.0 or above): [https://www.breakfastquay.com/rubberband/](https://www.breakfastquay.com/rubberband/)
+* **WaveformWidget** library (fork): [https://github.com/nitanmarcel/WaveformWidget.git](https://github.com/nitanmarcel/WaveformWidget.git)
+* **Ffmpeg**
 
 To build from source:
 

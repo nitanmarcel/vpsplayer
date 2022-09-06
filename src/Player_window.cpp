@@ -27,9 +27,11 @@
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QDragEnterEvent>
+#include <WaveformWidget.h>
 
 #include "Player_window.h"
 #include "settingsdialog.h"
+#include "waveconvert.h"
 #include "tools.h"
 
 
@@ -39,6 +41,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   clearFocus();
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
+  wave_converter = new WaveConvert;
   key_modifier = false;
 
   const QIcon open_icon(QStringLiteral(":/open-32.png"));
@@ -156,10 +159,13 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_player->addLayout(layout_progress);
   QGroupBox *groupbox_player = new QGroupBox("");
   groupbox_player->setLayout(layout_player);
+
+  widget_waveform = new WaveformWidget;
   
   QVBoxLayout *layout_main = new QVBoxLayout;
   layout_main->addWidget(groupbox_settings);
   layout_main->addWidget(groupbox_player);
+  layout_main->addWidget(widget_waveform);
   QWidget *widget_main = new QWidget;
   widget_main->setLayout(layout_main);
   setCentralWidget(widget_main);
@@ -290,8 +296,10 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
 {
   setWindowTitle(QStringLiteral("VPS Player [%1]").arg(file_info.fileName()));
   music_directory = file_info.canonicalPath();
+  QString filePath = wave_converter->convertFile(file_info);
 
-  audio_player->decodeFile(file_info.canonicalFilePath());
+  audio_player->decodeFile(filePath);
+  widget_waveform->setSource(filePath);
 }
 
 

@@ -24,7 +24,6 @@ AudioPlayer::AudioPlayer(QObject *parent) : QObject(parent),
 					    option_high_quality(true),
 					    target_format(QAudioDeviceInfo::defaultOutputDevice().preferredFormat())
 {
-
   target_format.setCodec(QStringLiteral("audio/pcm"));
   target_format.setSampleType(QAudioFormat::SignedInt);
   target_format.setSampleSize(16);
