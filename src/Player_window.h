@@ -49,6 +49,9 @@ private:
   QLabel *label_loading_progress;
   QString music_directory;
   SettingsDialog *settings_dialog;
+
+  int playback_speed;
+  int pitch_value;
   
 public:
   PlayerWindow(const QIcon &app_icon, const QString &filename = QString()); // Constructor
@@ -73,6 +76,9 @@ protected:
   void dropEvent(QDropEvent *e);
   void keyPressEvent(QKeyEvent *event);
 
+signals:
+  int playbackSpeedChanged(int speed);
+  int pitchValueChanged(int value);
 };
 
 #endif

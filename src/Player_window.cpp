@@ -198,6 +198,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(spinbox_pitch, qOverload<int>(&QSpinBox::valueChanged), slider_pitch, &QAbstractSlider::setValue);
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
+  connect(this, &PlayerWindow::playbackSpeedChanged, slider_speed, &QAbstractSlider::setValue);
+  connect(this, &PlayerWindow::pitchValueChanged, slider_pitch, &QAbstractSlider::setValue);
   connect(settings_dialog, &SettingsDialog::indexOptionUseR3EngineChanged, audio_player, &AudioPlayer::updateOptionUseR3Engine );// [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
   connect(settings_dialog, &SettingsDialog::checkUseHighQualityChanged, audio_player, &AudioPlayer::updateOptionHighQuality);
   connect(settings_dialog, &SettingsDialog::checkFormantPreservedChanged, audio_player, &AudioPlayer::updateOptionFormantPreserved);
@@ -355,6 +357,7 @@ void PlayerWindow::updatePitch(int pitch)
 {
   spinbox_pitch->setValue(pitch);
   audio_player->updatePitch(pitch);
+  pitch_value = pitch;
 }
 
 
@@ -377,6 +380,7 @@ void PlayerWindow::updateSpeed(int speed)
   qreal speed_ratio = qPow(qreal(2.0), speed / qreal(24.0));
   label_speed_value->setText(QStringLiteral("x %1").arg(speed_ratio, 0, 'f', 2));
   audio_player->updateSpeed(static_cast<double>(speed_ratio));
+  playback_speed = speed;
 }
 
 
@@ -459,5 +463,26 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
         if (button_bwd5->isEnabled())
             button_bwd5->click();
     }
+    else if (e->key() == Qt::Key_D)
+    {
+        if (playback_speed < 24)
+            emit playbackSpeedChanged(playback_speed + 1);
+    }
+    else if (e->key() == Qt::Key_A)
+    {
+        if (playback_speed > -24)
+            emit playbackSpeedChanged(playback_speed - 1);
+    }
+    else if (e->key() == Qt::Key_W)
+    {
+        if (pitch_value < 12)
+            emit pitchValueChanged(pitch_value + 1);
+    }
+    else if (e->key() == Qt::Key_S)
+    {
+        if (pitch_value > -12)
+            emit pitchValueChanged(pitch_value - 1);
+    }
+
 }
 
