@@ -479,7 +479,7 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     else if (e->key() == Qt::Key_Left || e->key() == Qt::Key_Q)
     {
         if (!key_modifier && button_bwd5->isEnabled())
-            button_bwd10->click();
+            button_bwd5->click();
         else if (key_modifier && button_bwd10->isEnabled())
             button_bwd10->click();
     }
