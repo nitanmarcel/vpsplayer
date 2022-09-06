@@ -457,12 +457,17 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     {
         key_modifier = true;
     }
-    else if (e->key() == Qt::Key_Space)
+    else if (e->key() == Qt::Key_Space && !key_modifier)
     {
         if (button_play->isEnabled())
             button_play->click();
         else if (button_pause->isEnabled())
             button_pause->click();
+    }
+    else if (e->key() == Qt::Key_Space && key_modifier)
+    {
+        if (button_stop->isEnabled())
+            button_stop->click();
     }
     else if (e->key() == Qt::Key_Right || e->key() == Qt::Key_E)
     {
