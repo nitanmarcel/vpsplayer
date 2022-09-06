@@ -124,6 +124,7 @@ void AudioPlayer::pausePlaying()
   status = AudioPlayer::Paused;
   emit statusChanged(status);
   audio_output->suspend();
+  timer->stop();
 }
 
 
@@ -135,6 +136,7 @@ void AudioPlayer::resumePlaying()
 
   status = AudioPlayer::Playing;
   emit statusChanged(status);
+  timer->start();
   audio_output->resume();
   fillAudioBuffer();
 }
@@ -153,10 +155,10 @@ void AudioPlayer::startPlaying()
   no_more_data = false;
 
   stretcher = std::make_unique<RubberBand::RubberBandStretcher>(static_cast<size_t>(target_format.sampleRate()),
-								static_cast<size_t>(target_format.channelCount()),
-								generateStretcherOptionsFlag(),
-								time_ratio,
-								pitch_scale);
+                                static_cast<size_t>(target_format.channelCount()),
+                                generateStretcherOptionsFlag(),
+                                time_ratio,
+                                pitch_scale);
   int max_sample_count = 0;
   for (QAudioBuffer const& audio_buffer : *decoded_samples) {
     int sample_count = audio_buffer.sampleCount();
@@ -164,14 +166,14 @@ void AudioPlayer::startPlaying()
       max_sample_count = sample_count;
   }
   stretcher->setMaxProcessSize(static_cast<size_t>(max_sample_count));
-  
+
   audio_output = new QAudioOutput(target_format, this);
   audio_output->setBufferSize(static_cast<qsizetype>(target_format.bytesForDuration(100000))); // Audio buffer size should correspond to about 100 ms.
-  audio_output->setNotifyInterval(10);
-
   audio_output->setVolume(output_volume);
+  timer = new QTimer(this);
+  timer->setInterval(10);
   temp_buffer = new QBuffer(this);
-  connect(audio_output, &QAudioOutput::notify, this, &AudioPlayer::fillAudioBuffer);
+  connect(timer, &QTimer::timeout, this, &AudioPlayer::fillAudioBuffer);
   connect(audio_output, &QAudioOutput::stateChanged, this, &AudioPlayer::manageAudioOutputState);
   output_buffer = audio_output->start();
   QAudio::Error error_status = audio_output->error();
@@ -182,6 +184,7 @@ void AudioPlayer::startPlaying()
     emit audioOutputError(error_status);
     stopPlaying();
   }
+  timer->start();
 }
 
 
@@ -194,7 +197,9 @@ void AudioPlayer::stopPlaying()
   status = AudioPlayer::Stopped;
   emit statusChanged(status);
   emit readingPositionChanged(0);
-  
+
+  disconnect(timer, 0, 0, 0);
+  timer->deleteLater();
   audio_output->stop();
   disconnect(audio_output, 0, 0, 0);
   audio_output->deleteLater();

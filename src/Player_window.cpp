@@ -149,9 +149,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   label_duration = new QLabel;
   label_duration->setFont(fixed_font);
   QHBoxLayout *layout_progress = new QHBoxLayout;
-  layout_progress->addWidget(label_reading_progress);
+  //layout_progress->addWidget(label_reading_progress);
   layout_progress->addWidget(progress_playing);
-  layout_progress->addWidget(label_duration);
+  //layout_progress->addWidget(label_duration);
 
   QVBoxLayout *layout_player = new QVBoxLayout;
   layout_player->addLayout(layout_buttons);

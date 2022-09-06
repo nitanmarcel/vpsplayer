@@ -18,6 +18,7 @@
 #include <QSpinBox>
 #include <QString>
 #include <QKeyEvent>
+
 #include <WaveformWidget.h>
 
 #include "Audio_player.h"
@@ -50,6 +51,7 @@ private:
   QLabel *label_status;
   QLabel *label_loading_progress;
   QString music_directory;
+
   SettingsDialog *settings_dialog;
   WaveformWidget *widget_waveform;
   WaveConvert *wave_converter;

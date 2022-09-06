@@ -19,6 +19,7 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
+#include <QTimer>
 
 
 class AudioPlayer : public QObject
@@ -53,6 +54,7 @@ private:
   qsizetype reading_index;
   bool no_more_data;
   std::unique_ptr<RubberBand::RubberBandStretcher> stretcher;
+  QTimer *timer;
   
 public:
   AudioPlayer(QObject *parent = nullptr); // Constructor
