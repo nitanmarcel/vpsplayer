@@ -453,12 +453,12 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
         else if (button_pause->isEnabled())
             button_pause->click();
     }
-    else if (e->key() == Qt::Key_Right)
+    else if (e->key() == Qt::Key_Right || e->key() == Qt::Key_E)
     {
         if (button_fwd5->isEnabled())
             button_fwd5->click();
     }
-    else if (e->key() == Qt::Key_Left)
+    else if (e->key() == Qt::Key_Left || e->key() == Qt::Key_Q)
     {
         if (button_bwd5->isEnabled())
             button_bwd5->click();
