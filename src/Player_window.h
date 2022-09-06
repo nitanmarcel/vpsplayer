@@ -52,6 +52,7 @@ private:
 
   int playback_speed;
   int pitch_value;
+  bool key_modifier;
   
 public:
   PlayerWindow(const QIcon &app_icon, const QString &filename = QString()); // Constructor
@@ -74,7 +75,8 @@ private:
 protected:
   void dragEnterEvent(QDragEnterEvent *e);
   void dropEvent(QDropEvent *e);
-  void keyPressEvent(QKeyEvent *event);
+  void keyPressEvent(QKeyEvent *e);
+  void keyReleaseEvent(QKeyEvent *e);
 
 signals:
   int playbackSpeedChanged(int speed);

@@ -39,6 +39,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   clearFocus();
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
+  key_modifier = false;
 
   const QIcon open_icon(QStringLiteral(":/open-32.png"));
   const QIcon backward_icon(QStringLiteral(":/backward-32.png"));
@@ -444,9 +445,19 @@ void PlayerWindow::dropEvent(QDropEvent *e)
     openFile(file);
 }
 
+void PlayerWindow::keyReleaseEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Shift && key_modifier)
+        key_modifier = false;
+}
+
 void PlayerWindow::keyPressEvent(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_Space)
+    if (e->key() == Qt::Key_Shift && !key_modifier)
+    {
+        key_modifier = true;
+    }
+    else if (e->key() == Qt::Key_Space)
     {
         if (button_play->isEnabled())
             button_play->click();
@@ -455,33 +466,37 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     }
     else if (e->key() == Qt::Key_Right || e->key() == Qt::Key_E)
     {
-        if (button_fwd5->isEnabled())
+        if (!key_modifier && button_fwd5->isEnabled())
             button_fwd5->click();
+        else if (key_modifier && button_fwd10->isEnabled())
+            button_fwd10->click();
     }
     else if (e->key() == Qt::Key_Left || e->key() == Qt::Key_Q)
     {
-        if (button_bwd5->isEnabled())
-            button_bwd5->click();
+        if (!key_modifier && button_bwd5->isEnabled())
+            button_bwd10->click();
+        else if (key_modifier && button_bwd10->isEnabled())
+            button_bwd10->click();
     }
     else if (e->key() == Qt::Key_D)
     {
         if (playback_speed < 24)
-            emit playbackSpeedChanged(playback_speed + 1);
+            emit playbackSpeedChanged(playback_speed + (key_modifier ? 5 : 1));
     }
     else if (e->key() == Qt::Key_A)
     {
         if (playback_speed > -24)
-            emit playbackSpeedChanged(playback_speed - 1);
+            emit playbackSpeedChanged(playback_speed - (key_modifier ? 5 : 1));
     }
     else if (e->key() == Qt::Key_W)
     {
         if (pitch_value < 12)
-            emit pitchValueChanged(pitch_value + 1);
+            emit pitchValueChanged(pitch_value + (key_modifier ? 5 : 1));
     }
     else if (e->key() == Qt::Key_S)
     {
         if (pitch_value > -12)
-            emit pitchValueChanged(pitch_value - 1);
+            emit pitchValueChanged(pitch_value - (key_modifier ? 5 : 1));
     }
 
 }
