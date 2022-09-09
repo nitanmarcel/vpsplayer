@@ -11,7 +11,7 @@ AppSettings::AppSettings(QObject *parent)
     ffmpegPath = settings->value("ffmpeg_path", "").value<QString>();
     engineIndex = settings->value("engine_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
-    perserveFormatShape = settings->value("perserve_format_shape", true).value<bool>();
+    perserveFormatShape = settings->value("perserve_formant_shape", true).value<bool>();
 }
 
 AppSettings::~AppSettings()
@@ -49,7 +49,7 @@ void AppSettings::setHighQuality(bool enabled)
 void AppSettings::setPerserveFormatShape(bool enabled)
 {
     perserveFormatShape = enabled;
-    settings->setValue("perserve_format_shape", enabled);
+    settings->setValue("perserve_formant_shape", enabled);
     settings->sync();
 }
 
