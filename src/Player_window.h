@@ -45,9 +45,10 @@ private:
   QPushButton *button_fwd10;
   QSpinBox *spinbox_pitch;
   QLabel *label_speed_value;
+  QString total_duration;
+  QString reading_progress;
   PlayingProgress *progress_playing;
-  QLabel *label_reading_progress;
-  QLabel *label_duration;
+  QLabel *label_progress;
   QLabel *label_status;
   QLabel *label_loading_progress;
   QString music_directory;

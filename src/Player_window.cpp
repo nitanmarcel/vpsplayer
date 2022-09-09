@@ -140,36 +140,34 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_buttons2->addWidget(button_fwd5);
   layout_buttons2->addWidget(button_fwd10);
 
-  progress_playing = new PlayingProgress;
-  progress_playing->setFocusPolicy(Qt::NoFocus);
-  label_reading_progress = new QLabel;
-  label_reading_progress->setFont(fixed_font);
-  label_duration = new QLabel;
-  label_duration->setFont(fixed_font);
-  QHBoxLayout *layout_progress = new QHBoxLayout;
-  //layout_progress->addWidget(label_reading_progress);
-  layout_progress->addWidget(progress_playing);
-  //layout_progress->addWidget(label_duration);
-
   QVBoxLayout *layout_player = new QVBoxLayout;
   layout_player->addLayout(layout_buttons);
   layout_player->addLayout(layout_buttons2);
-  layout_player->addLayout(layout_progress);
+  //layout_player->addLayout(layout_progress);
   QGroupBox *groupbox_player = new QGroupBox("");
   groupbox_player->setLayout(layout_player);
 
-  QHBoxLayout *layout_waveform = new QHBoxLayout;
+  QVBoxLayout *layout_waveform = new QVBoxLayout;
   widget_waveform = new WaveformWidget;
   layout_waveform->addWidget(widget_waveform);
   QGroupBox *groupbox_waveform = new QGroupBox();
   groupbox_waveform->setLayout(layout_waveform);
   groupbox_waveform->setMinimumHeight(150);
 
+  QVBoxLayout *layout_progress = new QVBoxLayout();
+  label_progress = new QLabel;
+  label_progress->setFont(fixed_font);
+  layout_progress->addWidget(label_progress);
+  QGroupBox *groupbox_progress = new QGroupBox();
+  groupbox_progress->setLayout(layout_progress);
+  groupbox_progress->setMaximumHeight(label_progress->fontInfo().weight());
+
   
   QVBoxLayout *layout_main = new QVBoxLayout;
   layout_main->addWidget(groupbox_settings);
   layout_main->addWidget(groupbox_player);
   layout_main->addWidget(groupbox_waveform);
+  layout_main->addWidget(groupbox_progress);
   QWidget *widget_main = new QWidget;
   widget_main->setLayout(layout_main);
   setCentralWidget(widget_main);
@@ -212,6 +210,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(spinbox_pitch, qOverload<int>(&QSpinBox::valueChanged), slider_pitch, &QAbstractSlider::setValue);
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
+  connect(widget_waveform, &WaveformWidget::barClicked, this, &PlayerWindow::moveReadingPosition);
   connect(this, &PlayerWindow::playbackSpeedChanged, slider_speed, &QAbstractSlider::setValue);
   connect(this, &PlayerWindow::pitchValueChanged, slider_pitch, &QAbstractSlider::setValue);
   connect(settings_dialog, &SettingsDialog::indexOptionUseR3EngineChanged, audio_player, &AudioPlayer::updateOptionUseR3Engine );// [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
@@ -223,7 +222,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::readingPositionChanged, this, &PlayerWindow::updateReadingPosition);
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
-  connect(progress_playing, &PlayingProgress::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+  connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
   connect(settings_dialog, &SettingsDialog::ffmpegPathChanged, widget_waveform, &WaveformWidget::setFfmpegPath);
   connect(settings_dialog, &SettingsDialog::checkConvertMonoChanged, widget_waveform, &WaveformWidget::setFfmpegConvertToMono);
 
@@ -336,11 +335,12 @@ void PlayerWindow::playAudio()
 // Moves reading position backward or forward. Parameter: position change in milliseconds
 void PlayerWindow::moveReadingPosition(int delta)
 {
-  int new_position = progress_playing->value() + delta;
-  if (new_position >= progress_playing->maximum())
+  int new_position = widget_waveform->value();
+  if (new_position >= widget_waveform->maximum())
     audio_player->stopPlaying();
   else
     audio_player->moveReadingPosition(qMax(0, new_position));
+  qDebug() << qMax(0, new_position);
 }
 
 
@@ -363,10 +363,11 @@ void PlayerWindow::showSettings()
 void PlayerWindow::updateDuration(int duration)
 {
   if (duration == -1)
-    progress_playing->setValue(0);
+    widget_waveform->setValue(0);
   else
-    progress_playing->setMaximum(duration);
-  label_duration->setText(Tools::convertMSecToText(duration));
+    widget_waveform->setMaximum(duration);
+  total_duration = Tools::convertMSecToText(duration);
+  label_progress->setText(reading_progress + "/" + total_duration);
 }
 
 
@@ -383,12 +384,13 @@ void PlayerWindow::updatePitch(int pitch)
 void PlayerWindow::updateReadingPosition(int position)
 {
   if (position == -1)
-    progress_playing->setValue(0);
+    widget_waveform->setValue(0);
   else{
-    progress_playing->setValue(position);
-    progress_playing->setFormat(QString::number(position)); // to force progress bar refresh
+    widget_waveform->setValue(position);
+    //widget_waveform->setFormat(QString::number(position)); // to force progress bar refresh
   }
-  label_reading_progress->setText(Tools::convertMSecToText(position));
+  reading_progress = Tools::convertMSecToText(position);
+  label_progress->setText(reading_progress + "/" + total_duration);
 }
 
 
@@ -417,7 +419,7 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     button_fwd10->setEnabled(playback_begun);
     button_play->setEnabled(enable_play);
     button_pause->setEnabled(enable_pause);
-    progress_playing->setClickable(playback_begun);
+    widget_waveform->setClickable(playback_begun);
   };
 
   switch(status) {
