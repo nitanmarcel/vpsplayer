@@ -340,7 +340,6 @@ void PlayerWindow::moveReadingPosition(int delta)
     audio_player->stopPlaying();
   else
     audio_player->moveReadingPosition(qMax(0, new_position));
-  qDebug() << qMax(0, new_position);
 }
 
 
