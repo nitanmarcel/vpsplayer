@@ -203,10 +203,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(button_play, &QPushButton::clicked, this, &PlayerWindow::playAudio);
   connect(button_pause, &QPushButton::clicked, audio_player, &AudioPlayer::pausePlaying);
   connect(button_stop, &QPushButton::clicked, audio_player, &AudioPlayer::stopPlaying);
-  connect(button_bwd10, &QPushButton::clicked, [this](){ moveReadingPosition(-10000); });
-  connect(button_bwd5, &QPushButton::clicked, [this](){ moveReadingPosition(-5000); });
-  connect(button_fwd5, &QPushButton::clicked, [this](){ moveReadingPosition(5000); });
-  connect(button_fwd10, &QPushButton::clicked, [this](){ moveReadingPosition(10000); });
+  connect(button_bwd10, &QPushButton::clicked, [this](){ bfReadingPosition(-10000); });
+  connect(button_bwd5, &QPushButton::clicked, [this](){ bfReadingPosition(-5000); });
+  connect(button_fwd5, &QPushButton::clicked, [this](){ bfReadingPosition(5000); });
+  connect(button_fwd10, &QPushButton::clicked, [this](){ bfReadingPosition(10000); });
   connect(spinbox_pitch, qOverload<int>(&QSpinBox::valueChanged), slider_pitch, &QAbstractSlider::setValue);
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
@@ -333,13 +333,22 @@ void PlayerWindow::playAudio()
 
 
 // Moves reading position backward or forward. Parameter: position change in milliseconds
-void PlayerWindow::moveReadingPosition(int delta)
+void PlayerWindow::moveReadingPosition()
 {
   int new_position = widget_waveform->value();
   if (new_position >= widget_waveform->maximum())
     audio_player->stopPlaying();
   else
     audio_player->moveReadingPosition(qMax(0, new_position));
+}
+
+void PlayerWindow::bfReadingPosition(int miliseconds)
+{
+    int new_position = widget_waveform->value() + miliseconds;
+    if (new_position >= widget_waveform->maximum())
+      audio_player->stopPlaying();
+    else
+      audio_player->moveReadingPosition(qMax(0, new_position));
 }
 
 

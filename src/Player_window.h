@@ -72,7 +72,8 @@ private:
   void openFile(const QFileInfo &file_info); // Open file given in parameter
   void openFileFromSelector(); // Open a new file (chosen with a file selector)
   void playAudio(); // Start or resume audio playing
-  void moveReadingPosition(int delta); // Moves reading position backward or forward. Parameter: position change in milliseconds
+  void moveReadingPosition(); // Moves reading position when the waveform bar is clicked. Parameter: position change in milliseconds
+  void bfReadingPosition(int miliseconds); // Moves reading position backward or forward. Parameter: position change in milliseconds
   void showAbout(); // Displays "About" dialog window
   void showSettings(); // Displays "Settings" dialog window
   void updateDuration(int duration); // Updates total file duration
