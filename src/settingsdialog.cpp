@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 
+#include <QDebug>
 SettingsDialog::SettingsDialog(AppSettings *settings)
 {
 
@@ -58,6 +59,12 @@ SettingsDialog::SettingsDialog(AppSettings *settings)
     connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emitCheckFormantPreservedChanged(checked); });
     connect(ffmpeg_path, &QLineEdit::textChanged, [this](QString path){  emitFfmpegPathChanged(path); });
     connect(check_convert_mono, &QAbstractButton::toggled, [this](bool checked){  emitCheckConvertMonoChanged(checked); });
+
+    emitIndexOptionUseR3EngineChanged(app_settings->getEngineIndex());
+    emitCheckUseHighQualityChanged(app_settings->getHighQuality());
+    emitCheckFormantPreservedChanged(app_settings->getPerserveFormatShape());
+    emitFfmpegPathChanged(app_settings->getFfmpegPath());
+    emitCheckConvertMonoChanged(app_settings->getConvertMono());
 }
 
 // Destructor
