@@ -12,6 +12,8 @@
 #include <QString>
 #include <QStringList>
 #include <QFile>
+#include <QDir>
+#include <QStandardPaths>
 
 #include "Player_window.h"
 
@@ -24,7 +26,26 @@ int main(int argc, char *argv[])
   const QIcon app_icon(QStringLiteral(":/vps-64.png"));
   app.setWindowIcon(app_icon);
 
-  QFile stylesheet_file(":/default.qss");
+  QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + "vpsplayer" + QDir::separator();
+  if (!QDir(settingsPath).exists())
+      QDir().mkdir(settingsPath);
+
+  QFile stylesheet_file(settingsPath + "style.qss");
+  if (!stylesheet_file.exists())
+  {
+      if (stylesheet_file.open(QFile::WriteOnly))
+      {
+          QFile qrc_stylesheet_file(":/default.qss");
+          if (qrc_stylesheet_file.open(QFile::ReadOnly))
+          {
+              QTextStream stream(&stylesheet_file);
+              stream << QLatin1String(qrc_stylesheet_file.readAll());
+              qrc_stylesheet_file.close();
+              stylesheet_file.close();
+          }
+      }
+  }
+      //QFile::copy(":/default.qss", settingsPath + "style.qss");
   stylesheet_file.open(QFile::ReadOnly);
   QString styleSheet = QLatin1String(stylesheet_file.readAll());
   app.setStyleSheet(styleSheet);

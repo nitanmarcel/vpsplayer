@@ -6,8 +6,6 @@ AppSettings::AppSettings(QObject *parent)
     : QObject{parent}
 {
     QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + "vpsplayer" + QDir::separator();
-    if (!QDir(settingsPath).exists())
-        QDir().mkdir(settingsPath);
     settings =  new QSettings(settingsPath + "settings.ini", QSettings::IniFormat);
     convertMono = settings->value("convert_mono", false).value<bool>();
     ffmpegPath = settings->value("ffmpeg_path", "").value<QString>();
