@@ -1,8 +1,16 @@
 #include "settingsdialog.h"
+#include "appsettings.h"
 #include <QLabel>
+#include <QLineEdit>
+#include <QGroupBox>
 #include <QHBoxLayout>
-SettingsDialog::SettingsDialog()
+
+SettingsDialog::SettingsDialog(AppSettings *settings)
 {
+
+    app_settings = settings;
+
+    QGroupBox *groupbox_general_settings = new QGroupBox("General");
     QLabel *label_engine = new QLabel("Engine");
     combobox_engine = new QComboBox;
     combobox_engine->addItem("Rubber Band R2 (faster)");
@@ -19,30 +27,72 @@ SettingsDialog::SettingsDialog()
     check_high_quality = new QCheckBox("High quality (uses more CPU)");
     check_high_quality->setToolTip("Use the highest quality method for pitch shifting. This method may use much more CPU, especially for large pitch shift.");
 
-    QVBoxLayout *layout_settings = new QVBoxLayout;
-    layout_settings->addLayout(layout_engine);
-    layout_settings->addWidget(check_high_quality);
-    layout_settings->addWidget(check_formant_preserved);
+    QVBoxLayout *layout_general_settings = new QVBoxLayout;
+    layout_general_settings->addLayout(layout_engine);
+    layout_general_settings->addWidget(check_high_quality);
+    layout_general_settings->addWidget(check_formant_preserved);
+    combobox_engine->setCurrentIndex(app_settings->getEngineIndex());
+    check_high_quality->setChecked(app_settings->getHighQuality());
+    check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
+    groupbox_general_settings->setLayout(layout_general_settings);
 
-    // Update status
-    //combobox_engine->setEnabled(enable_options);
-    //check_high_quality->setEnabled(enable_options);
-    check_formant_preserved->setChecked(true);
+    QGroupBox *groupbox_ffmpeg_settings = new QGroupBox("Ffmpeg binray path to convert from non-wav to wav for generating waveforms.");
+    QVBoxLayout *layout_ffmpeg_settings = new QVBoxLayout;
+    ffmpeg_path = new QLineEdit();
+    ffmpeg_path->setText(app_settings->getFfmpegPath());
+    layout_ffmpeg_settings->addWidget(ffmpeg_path);
+    check_convert_mono = new QCheckBox("Use ffmpeg to convert from stereo to mono");
+    check_convert_mono->setChecked(app_settings->getConvertMono());
+    check_convert_mono->setEnabled(!app_settings->getFfmpegPath().isEmpty());
+    layout_ffmpeg_settings->addWidget(check_convert_mono);
+    groupbox_ffmpeg_settings->setLayout(layout_ffmpeg_settings);
 
-    combobox_engine->setCurrentIndex(1);
-    check_high_quality->setChecked(true);
+    QVBoxLayout *layout_main = new QVBoxLayout;
+    layout_main->addWidget(groupbox_general_settings);
+    layout_main->addWidget(groupbox_ffmpeg_settings);
 
-    settings = new QWidget;
-    settings->setLayout(layout_settings);
-    setLayout(layout_settings);
+    setLayout(layout_main);
 
-    connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ emit indexOptionUseR3EngineChanged(index); });
-    connect(check_high_quality, &QAbstractButton::toggled, [this](bool checked){ emit checkUseHighQualityChanged(checked); });
-    connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emit checkUseHighQualityChanged(checked); });
+    connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ emitIndexOptionUseR3EngineChanged(index); });
+    connect(check_high_quality, &QAbstractButton::toggled, [this](bool checked){ emitCheckUseHighQualityChanged(checked); });
+    connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emitCheckFormantPreservedChanged(checked); });
+    connect(ffmpeg_path, &QLineEdit::textChanged, [this](QString path){  emitFfmpegPathChanged(path); });
+    connect(check_convert_mono, &QAbstractButton::toggled, [this](bool checked){  emitCheckConvertMonoChanged(checked); });
 }
 
 // Destructor
 SettingsDialog::~SettingsDialog()
 {
 
+}
+
+void SettingsDialog::emitIndexOptionUseR3EngineChanged(int index)
+{
+    app_settings->setEngineIndex(index);
+    emit indexOptionUseR3EngineChanged(index);
+}
+
+void SettingsDialog::emitCheckUseHighQualityChanged(bool enabled)
+{
+    app_settings->setHighQuality(enabled);
+    emit checkUseHighQualityChanged(enabled);
+}
+
+void SettingsDialog::emitCheckFormantPreservedChanged(bool enabled)
+{
+    app_settings->setPerserveFormatShape(enabled);
+    emit checkFormantPreservedChanged(enabled);
+}
+
+void SettingsDialog::emitFfmpegPathChanged(QString path)
+{
+    app_settings->setFfmpegPath(path);
+    emit ffmpegPathChanged(path);
+    check_convert_mono->setEnabled(!path.isEmpty());
+}
+
+void SettingsDialog::emitCheckConvertMonoChanged(bool enabled)
+{
+    app_settings->setConvertMono(enabled);
+    emit checkConvertMonoChanged(enabled);
 }

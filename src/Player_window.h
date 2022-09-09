@@ -24,6 +24,7 @@
 #include "Audio_player.h"
 #include "Playing_progress.h"
 #include "settingsdialog.h"
+#include "appsettings.h"
 
 
 class PlayerWindow : public QMainWindow
@@ -57,6 +58,8 @@ private:
   int playback_speed;
   int pitch_value;
   bool key_modifier;
+
+  AppSettings *settings;
   
 public:
   PlayerWindow(const QIcon &app_icon, const QString &filename = QString()); // Constructor

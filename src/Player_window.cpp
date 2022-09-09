@@ -160,8 +160,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 
   QHBoxLayout *layout_waveform = new QHBoxLayout;
   widget_waveform = new WaveformWidget;
-  widget_waveform->setPaintAllChannels(false);
-  widget_waveform->setFfmpegPath("/usr/bin/ffmpeg");
   layout_waveform->addWidget(widget_waveform);
   QGroupBox *groupbox_waveform = new QGroupBox();
   groupbox_waveform->setLayout(layout_waveform);
@@ -192,7 +190,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   
   setAcceptDrops(true);
 
-  settings_dialog = new SettingsDialog();
+  settings = new AppSettings;
+  settings_dialog = new SettingsDialog(settings);
+  widget_waveform->setFfmpegPath(settings->getFfmpegPath());
+  widget_waveform->setFfmpegConvertToMono(settings->getConvertMono());
 
   connect(action_open, &QAction::triggered, this, &PlayerWindow::openFileFromSelector);
   connect(action_quit, &QAction::triggered, this, &PlayerWindow::close);
@@ -223,6 +224,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
   connect(progress_playing, &PlayingProgress::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+  connect(settings_dialog, &SettingsDialog::ffmpegPathChanged, widget_waveform, &WaveformWidget::setFfmpegPath);
+  connect(settings_dialog, &SettingsDialog::checkConvertMonoChanged, widget_waveform, &WaveformWidget::setFfmpegConvertToMono);
+
+
 
   const QStringList music_directories = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
   if (music_directories.isEmpty())

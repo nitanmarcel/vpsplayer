@@ -11,15 +11,15 @@ HEADERS = src/Audio_player.h \
           src/Player_window.h \
           src/Playing_progress.h \
           src/settingsdialog.h \
-          src/tools.h \
-          src/waveconvert.h
+          src/appsettings.h \
+          src/tools.h
 SOURCES = src/main.cpp \
           src/Audio_player.cpp \
           src/Player_window.cpp \
           src/Playing_progress.cpp \
           src/settingsdialog.cpp \
-          src/tools.cpp \
-          src/waveconvert.cpp
+          src/appsettings.cpp \
+          src/tools.cpp
 RESOURCES = icons.qrc styles.qrc
 TARGET = vpsplayer
 
