@@ -12,7 +12,7 @@ AppSettings::AppSettings(QObject *parent)
     engineIndex = settings->value("engine_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("perserve_formant_shape", true).value<bool>();
-    showWaveform = settings->value("view_waveform", false).value<bool>();
+    showWaveform = settings->value("show_waveform", false).value<bool>();
 }
 
 AppSettings::~AppSettings()

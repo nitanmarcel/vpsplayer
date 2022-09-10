@@ -73,6 +73,7 @@ private:
   void openFileFromSelector(); // Open a new file (chosen with a file selector)
   void playAudio(); // Start or resume audio playing
   void moveReadingPosition(); // Moves reading position when the waveform bar is clicked. Parameter: position change in milliseconds
+  void moveReadingPositionBar(int delta); // Moves reading position when the progress bar is clicked. Parameter: position change in milliseconds
   void bfReadingPosition(int miliseconds); // Moves reading position backward or forward. Parameter: position change in milliseconds
   void showAbout(); // Displays "About" dialog window
   void showSettings(); // Displays "Settings" dialog window

@@ -6,10 +6,10 @@
 #include <QHBoxLayout>
 
 #include <QDebug>
-SettingsDialog::SettingsDialog(AppSettings *settings)
+SettingsDialog::SettingsDialog()
 {
 
-    app_settings = settings;
+    app_settings = new AppSettings(this);
 
     QGroupBox *groupbox_general_settings = new QGroupBox("General");
     QLabel *label_engine = new QLabel("Engine");
@@ -28,10 +28,14 @@ SettingsDialog::SettingsDialog(AppSettings *settings)
     check_high_quality = new QCheckBox("High quality (uses more CPU)");
     check_high_quality->setToolTip("Use the highest quality method for pitch shifting. This method may use much more CPU, especially for large pitch shift.");
 
+    check_enable_waveform = new QCheckBox("Enable waveform (affects performance / requires restart)");
+    check_enable_waveform->setToolTip("Displays an waveform that acts as a progress bar. (Affects performance");
+
     QVBoxLayout *layout_general_settings = new QVBoxLayout;
     layout_general_settings->addLayout(layout_engine);
     layout_general_settings->addWidget(check_high_quality);
     layout_general_settings->addWidget(check_formant_preserved);
+    layout_general_settings->addWidget(check_enable_waveform);
     combobox_engine->setCurrentIndex(app_settings->getEngineIndex());
     check_high_quality->setChecked(app_settings->getHighQuality());
     check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
@@ -43,8 +47,6 @@ SettingsDialog::SettingsDialog(AppSettings *settings)
     ffmpeg_path->setText(app_settings->getFfmpegPath());
     layout_ffmpeg_settings->addWidget(ffmpeg_path);
     check_convert_mono = new QCheckBox("Use ffmpeg to convert from stereo to mono");
-    check_convert_mono->setChecked(app_settings->getConvertMono());
-    check_convert_mono->setEnabled(!app_settings->getFfmpegPath().isEmpty());
     layout_ffmpeg_settings->addWidget(check_convert_mono);
     groupbox_ffmpeg_settings->setLayout(layout_ffmpeg_settings);
 
@@ -54,9 +56,19 @@ SettingsDialog::SettingsDialog(AppSettings *settings)
 
     setLayout(layout_main);
 
+    combobox_engine->setCurrentIndex(app_settings->getEngineIndex());
+    check_high_quality->setChecked(app_settings->getHighQuality());
+    check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
+    check_enable_waveform->setChecked(app_settings->getShowWaveform());
+    ffmpeg_path->setText(app_settings->getFfmpegPath());
+    check_convert_mono->setEnabled(!app_settings->getFfmpegPath().isEmpty());
+    check_convert_mono->setChecked(!app_settings->getFfmpegPath().isEmpty() && app_settings->getConvertMono());
+
+
     connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ emitIndexOptionUseR3EngineChanged(index); });
     connect(check_high_quality, &QAbstractButton::toggled, [this](bool checked){ emitCheckUseHighQualityChanged(checked); });
     connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emitCheckFormantPreservedChanged(checked); });
+    connect(check_enable_waveform, &QAbstractButton::toggled, [this](bool checked){  emitCheckEnableWaveformChanged(checked); });
     connect(ffmpeg_path, &QLineEdit::textChanged, [this](QString path){  emitFfmpegPathChanged(path); });
     connect(check_convert_mono, &QAbstractButton::toggled, [this](bool checked){  emitCheckConvertMonoChanged(checked); });
 
@@ -89,6 +101,12 @@ void SettingsDialog::emitCheckFormantPreservedChanged(bool enabled)
 {
     app_settings->setPerserveFormatShape(enabled);
     emit checkFormantPreservedChanged(enabled);
+}
+
+void SettingsDialog::emitCheckEnableWaveformChanged(bool enabled)
+{
+    app_settings->setShowWaveform(enabled);
+    emit checkEnableWaveformChanged(enabled);
 }
 
 void SettingsDialog::emitFfmpegPathChanged(QString path)

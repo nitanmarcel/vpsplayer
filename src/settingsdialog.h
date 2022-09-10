@@ -13,6 +13,7 @@ class SettingsDialog : public QDialog
 private:
     QComboBox *combobox_engine;
     QCheckBox *check_high_quality;
+    QCheckBox *check_enable_waveform;
     QLineEdit *ffmpeg_path;
     QCheckBox *check_convert_mono;
     QWidget *widget_settings;
@@ -23,15 +24,18 @@ private:
     void emitCheckFormantPreservedChanged(bool enabled);
     void emitFfmpegPathChanged(QString path);
     void emitCheckConvertMonoChanged(bool enabled);
+    void emitCheckEnableWaveformChanged(bool enabled);
 public:
-    SettingsDialog(AppSettings *settings);
+    SettingsDialog();
     ~SettingsDialog(); // Destructor
+
 signals:
     int indexOptionUseR3EngineChanged(int);
     bool checkUseHighQualityChanged(bool);
     bool checkFormantPreservedChanged(bool);
     QString ffmpegPathChanged(QString path);
     bool checkConvertMonoChanged(bool enabled);
+    bool checkEnableWaveformChanged(bool enabled);
 };
 
 #endif // SETTINGSDIALOG_H

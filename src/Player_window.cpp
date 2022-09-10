@@ -37,6 +37,11 @@
 // Constructor
 PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 {
+
+  settings = new AppSettings(this);
+  settings_dialog = new SettingsDialog();
+  qDebug() << settings->getShowWaveform();
+
   clearFocus();
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
@@ -156,7 +161,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   QVBoxLayout *layout_player = new QVBoxLayout;
   layout_player->addLayout(layout_buttons);
   layout_player->addLayout(layout_buttons2);
-  layout_player->addLayout(layout_progress_bar);
   QGroupBox *groupbox_player = new QGroupBox("");
   groupbox_player->setLayout(layout_player);
 
@@ -167,7 +171,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   QGroupBox *groupbox_progress = new QGroupBox();
   groupbox_progress->setLayout(layout_progress);
   groupbox_progress->setMaximumHeight(label_progress->fontInfo().weight());
-
   
   QVBoxLayout *layout_main = new QVBoxLayout;
   layout_main->addWidget(groupbox_settings);
@@ -197,8 +200,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   
   setAcceptDrops(true);
 
-  settings = new AppSettings;
-  settings_dialog = new SettingsDialog(settings);
   widget_waveform->setFfmpegPath(settings->getFfmpegPath());
   widget_waveform->setFfmpegConvertToMono(settings->getConvertMono());
 
@@ -219,7 +220,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(spinbox_pitch, qOverload<int>(&QSpinBox::valueChanged), slider_pitch, &QAbstractSlider::setValue);
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
-  connect(widget_waveform, &WaveformWidget::barClicked, this, &PlayerWindow::moveReadingPosition);
+  if (settings->getShowWaveform())
+    connect(widget_waveform, &WaveformWidget::barClicked, this, &PlayerWindow::moveReadingPosition);
+  else
+    connect(progress_playing, &PlayingProgress::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
   connect(this, &PlayerWindow::playbackSpeedChanged, slider_speed, &QAbstractSlider::setValue);
   connect(this, &PlayerWindow::pitchValueChanged, slider_pitch, &QAbstractSlider::setValue);
   connect(settings_dialog, &SettingsDialog::indexOptionUseR3EngineChanged, audio_player, &AudioPlayer::updateOptionUseR3Engine );// [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
@@ -231,9 +235,11 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::readingPositionChanged, this, &PlayerWindow::updateReadingPosition);
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
-  connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+  if (settings->getShowWaveform())
+    connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
   connect(settings_dialog, &SettingsDialog::ffmpegPathChanged, widget_waveform, &WaveformWidget::setFfmpegPath);
   connect(settings_dialog, &SettingsDialog::checkConvertMonoChanged, widget_waveform, &WaveformWidget::setFfmpegConvertToMono);
+
 
 
 
@@ -341,7 +347,7 @@ void PlayerWindow::playAudio()
 }
 
 
-// Moves reading position backward or forward. Parameter: position change in milliseconds
+// Moves reading position backward or forward (waveform). Parameter: position change in milliseconds
 void PlayerWindow::moveReadingPosition()
 {
   int new_position = widget_waveform->value();
@@ -351,13 +357,30 @@ void PlayerWindow::moveReadingPosition()
     audio_player->moveReadingPosition(qMax(0, new_position));
 }
 
-void PlayerWindow::bfReadingPosition(int miliseconds)
+// Moves reading position backward or forward (progress bar). Parameter: position change in milliseconds
+void PlayerWindow::moveReadingPositionBar(int delta)
 {
-    int new_position = widget_waveform->value() + miliseconds;
-    if (new_position >= widget_waveform->maximum())
+    int new_position = progress_playing->value() + delta;
+    if (new_position >= progress_playing->maximum())
       audio_player->stopPlaying();
     else
       audio_player->moveReadingPosition(qMax(0, new_position));
+}
+
+void PlayerWindow::bfReadingPosition(int miliseconds)
+{
+    if (settings->getShowWaveform())
+    {
+        int new_position = widget_waveform->value() + miliseconds;
+        if (new_position >= widget_waveform->maximum())
+          audio_player->stopPlaying();
+        else
+          audio_player->moveReadingPosition(qMax(0, new_position));
+    }
+    else
+    {
+        moveReadingPositionBar(miliseconds);
+    }
 }
 
 
@@ -379,10 +402,21 @@ void PlayerWindow::showSettings()
 // Updates total file duration
 void PlayerWindow::updateDuration(int duration)
 {
-  if (duration == -1)
-    widget_waveform->setValue(0);
+  if (settings->getShowWaveform())
+  {
+      if (duration == -1)
+        widget_waveform->setValue(0);
+      else
+        widget_waveform->setMaximum(duration);
+  }
   else
-    widget_waveform->setMaximum(duration);
+  {
+      if (duration == -1)
+        progress_playing->setValue(0);
+      else
+        progress_playing->setMaximum(duration);
+  }
+
   total_duration = Tools::convertMSecToText(duration);
   label_progress->setText(reading_progress + "/" + total_duration);
 }
@@ -400,11 +434,22 @@ void PlayerWindow::updatePitch(int pitch)
 // Updates current reading position
 void PlayerWindow::updateReadingPosition(int position)
 {
-  if (position == -1)
-    widget_waveform->setValue(0);
-  else{
-    widget_waveform->setValue(position);
-    //widget_waveform->setFormat(QString::number(position)); // to force progress bar refresh
+  if (settings->getShowWaveform())
+  {
+      if (position == -1)
+        widget_waveform->setValue(0);
+      else
+        widget_waveform->setValue(position);
+  }
+  else
+  {
+      if (position == -1)
+        progress_playing->setValue(0);
+      else
+      {
+          progress_playing->setValue(position);
+          progress_playing->setFormat(QString::number(position)); // to force progress bar refresh
+      }
   }
   reading_progress = Tools::convertMSecToText(position);
   label_progress->setText(reading_progress + "/" + total_duration);
@@ -436,7 +481,10 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     button_fwd10->setEnabled(playback_begun);
     button_play->setEnabled(enable_play);
     button_pause->setEnabled(enable_pause);
-    widget_waveform->setClickable(playback_begun);
+    if (settings->getShowWaveform())
+        widget_waveform->setClickable(playback_begun);
+    else
+        progress_playing->setClickable(playback_begun);
   };
 
   switch(status) {
