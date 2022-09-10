@@ -140,12 +140,11 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_buttons2->addWidget(button_fwd5);
   layout_buttons2->addWidget(button_fwd10);
 
-  QVBoxLayout *layout_player = new QVBoxLayout;
-  layout_player->addLayout(layout_buttons);
-  layout_player->addLayout(layout_buttons2);
-  //layout_player->addLayout(layout_progress);
-  QGroupBox *groupbox_player = new QGroupBox("");
-  groupbox_player->setLayout(layout_player);
+  progress_playing = new PlayingProgress;
+  QHBoxLayout *layout_progress_bar = new QHBoxLayout;
+  layout_progress_bar->addWidget(progress_playing);
+  QGroupBox *groupbox_progess_bar = new QGroupBox();
+  groupbox_progess_bar->setLayout(layout_progress_bar);
 
   QVBoxLayout *layout_waveform = new QVBoxLayout;
   widget_waveform = new WaveformWidget;
@@ -153,6 +152,13 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   QGroupBox *groupbox_waveform = new QGroupBox();
   groupbox_waveform->setLayout(layout_waveform);
   groupbox_waveform->setMinimumHeight(150);
+
+  QVBoxLayout *layout_player = new QVBoxLayout;
+  layout_player->addLayout(layout_buttons);
+  layout_player->addLayout(layout_buttons2);
+  layout_player->addLayout(layout_progress_bar);
+  QGroupBox *groupbox_player = new QGroupBox("");
+  groupbox_player->setLayout(layout_player);
 
   QVBoxLayout *layout_progress = new QVBoxLayout();
   label_progress = new QLabel;
@@ -166,7 +172,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   QVBoxLayout *layout_main = new QVBoxLayout;
   layout_main->addWidget(groupbox_settings);
   layout_main->addWidget(groupbox_player);
-  layout_main->addWidget(groupbox_waveform);
+  if (settings->getShowWaveform())
+    layout_main->addWidget(groupbox_waveform);
+  else
+      layout_main->addWidget(groupbox_progess_bar);
   layout_main->addWidget(groupbox_progress);
   QWidget *widget_main = new QWidget;
   widget_main->setLayout(layout_main);

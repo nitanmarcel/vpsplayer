@@ -12,6 +12,7 @@ AppSettings::AppSettings(QObject *parent)
     engineIndex = settings->value("engine_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("perserve_formant_shape", true).value<bool>();
+    showWaveform = settings->value("view_waveform", false).value<bool>();
 }
 
 AppSettings::~AppSettings()
@@ -53,6 +54,13 @@ void AppSettings::setPerserveFormatShape(bool enabled)
     settings->sync();
 }
 
+void AppSettings::setShowWaveform(bool enabled)
+{
+    showWaveform = enabled;
+    settings->setValue("show_waveform", enabled);
+    settings->sync();
+}
+
 bool AppSettings::getConvertMono()
 {
     return convertMono;
@@ -76,4 +84,9 @@ bool AppSettings::getHighQuality()
 bool AppSettings::getPerserveFormatShape()
 {
     return perserveFormatShape;
+}
+
+bool AppSettings::getShowWaveform()
+{
+    return showWaveform;
 }

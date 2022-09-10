@@ -16,9 +16,11 @@ public:
     void setHighQuality(bool enabled);
     void setPerserveFormatShape(bool enabled);
     void setEngineIndex(int index);
+    void setShowWaveform(bool enabled);
     bool getConvertMono();
     bool getHighQuality();
     bool getPerserveFormatShape();
+    bool getShowWaveform();
     int getEngineIndex();
     QString getFfmpegPath();
 
@@ -29,6 +31,7 @@ private:
     int engineIndex;
     bool highQuality;
     bool perserveFormatShape;
+    bool showWaveform;
 };
 
 #endif // APPSETTINGS_H
