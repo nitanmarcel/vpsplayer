@@ -40,7 +40,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 
   settings = new AppSettings(this);
   settings_dialog = new SettingsDialog();
-  qDebug() << settings->getShowWaveform();
 
   clearFocus();
   setFocusPolicy(Qt::NoFocus);
@@ -188,9 +187,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   updatePitch(0);
   slider_speed->setValue(0);
   updateSpeed(0);
-  audio_player->updateOptionUseR3Engine(true);
-  audio_player->updateOptionHighQuality(true);
-  audio_player->updateOptionFormantPreserved(true);
+  audio_player->updateOptionUseR3Engine(settings->getEngineIndex() == 1);
+  audio_player->updateOptionHighQuality(settings->getHighQuality());
+  audio_player->updateOptionFormantPreserved(settings->getPerserveFormatShape());
   updateStatus(audio_player->getStatus());
   updateReadingPosition(-1);
   updateDuration(-1);
@@ -226,7 +225,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
     connect(progress_playing, &PlayingProgress::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
   connect(this, &PlayerWindow::playbackSpeedChanged, slider_speed, &QAbstractSlider::setValue);
   connect(this, &PlayerWindow::pitchValueChanged, slider_pitch, &QAbstractSlider::setValue);
-  connect(settings_dialog, &SettingsDialog::indexOptionUseR3EngineChanged, audio_player, &AudioPlayer::updateOptionUseR3Engine );// [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });
+  connect(settings_dialog, &SettingsDialog::indexOptionUseR3EngineChanged, [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });//  });
   connect(settings_dialog, &SettingsDialog::checkUseHighQualityChanged, audio_player, &AudioPlayer::updateOptionHighQuality);
   connect(settings_dialog, &SettingsDialog::checkFormantPreservedChanged, audio_player, &AudioPlayer::updateOptionFormantPreserved);
   connect(audio_player, &AudioPlayer::statusChanged, this, &PlayerWindow::updateStatus);
@@ -321,7 +320,8 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
 {
   setWindowTitle(QStringLiteral("VPS Player [%1]").arg(file_info.fileName()));
   music_directory = file_info.canonicalPath();
-  widget_waveform->setSource(new QFileInfo(file_info.canonicalFilePath()));
+  if (settings->getShowWaveform())
+    widget_waveform->setSource(new QFileInfo(file_info.canonicalFilePath()));
   audio_player->decodeFile(file_info.canonicalFilePath());
 }
 
