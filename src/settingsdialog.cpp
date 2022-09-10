@@ -41,18 +41,8 @@ SettingsDialog::SettingsDialog()
     check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
     groupbox_general_settings->setLayout(layout_general_settings);
 
-    QGroupBox *groupbox_ffmpeg_settings = new QGroupBox("Ffmpeg binray path to convert from non-wav to wav for generating waveforms.");
-    QVBoxLayout *layout_ffmpeg_settings = new QVBoxLayout;
-    ffmpeg_path = new QLineEdit();
-    ffmpeg_path->setText(app_settings->getFfmpegPath());
-    layout_ffmpeg_settings->addWidget(ffmpeg_path);
-    check_convert_mono = new QCheckBox("Use ffmpeg to convert from stereo to mono");
-    layout_ffmpeg_settings->addWidget(check_convert_mono);
-    groupbox_ffmpeg_settings->setLayout(layout_ffmpeg_settings);
-
     QVBoxLayout *layout_main = new QVBoxLayout;
     layout_main->addWidget(groupbox_general_settings);
-    layout_main->addWidget(groupbox_ffmpeg_settings);
 
     setLayout(layout_main);
 
@@ -60,23 +50,16 @@ SettingsDialog::SettingsDialog()
     check_high_quality->setChecked(app_settings->getHighQuality());
     check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
     check_enable_waveform->setChecked(app_settings->getShowWaveform());
-    ffmpeg_path->setText(app_settings->getFfmpegPath());
-    check_convert_mono->setEnabled(!app_settings->getFfmpegPath().isEmpty());
-    check_convert_mono->setChecked(!app_settings->getFfmpegPath().isEmpty() && app_settings->getConvertMono());
 
 
     connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ emitIndexOptionUseR3EngineChanged(index); });
     connect(check_high_quality, &QAbstractButton::toggled, [this](bool checked){ emitCheckUseHighQualityChanged(checked); });
     connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emitCheckFormantPreservedChanged(checked); });
     connect(check_enable_waveform, &QAbstractButton::toggled, [this](bool checked){  emitCheckEnableWaveformChanged(checked); });
-    connect(ffmpeg_path, &QLineEdit::textChanged, [this](QString path){  emitFfmpegPathChanged(path); });
-    connect(check_convert_mono, &QAbstractButton::toggled, [this](bool checked){  emitCheckConvertMonoChanged(checked); });
 
     emitIndexOptionUseR3EngineChanged(app_settings->getEngineIndex());
     emitCheckUseHighQualityChanged(app_settings->getHighQuality());
     emitCheckFormantPreservedChanged(app_settings->getPerserveFormatShape());
-    emitFfmpegPathChanged(app_settings->getFfmpegPath());
-    emitCheckConvertMonoChanged(app_settings->getConvertMono());
 }
 
 // Destructor
@@ -107,17 +90,4 @@ void SettingsDialog::emitCheckEnableWaveformChanged(bool enabled)
 {
     app_settings->setShowWaveform(enabled);
     emit checkEnableWaveformChanged(enabled);
-}
-
-void SettingsDialog::emitFfmpegPathChanged(QString path)
-{
-    app_settings->setFfmpegPath(path);
-    emit ffmpegPathChanged(path);
-    check_convert_mono->setEnabled(!path.isEmpty());
-}
-
-void SettingsDialog::emitCheckConvertMonoChanged(bool enabled)
-{
-    app_settings->setConvertMono(enabled);
-    emit checkConvertMonoChanged(enabled);
 }

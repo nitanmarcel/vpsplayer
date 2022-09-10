@@ -199,9 +199,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   
   setAcceptDrops(true);
 
-  widget_waveform->setFfmpegPath(settings->getFfmpegPath());
-  widget_waveform->setFfmpegConvertToMono(settings->getConvertMono());
-
   connect(action_open, &QAction::triggered, this, &PlayerWindow::openFileFromSelector);
   connect(action_quit, &QAction::triggered, this, &PlayerWindow::close);
   connect(action_about, &QAction::triggered, this, &PlayerWindow::showAbout);
@@ -236,8 +233,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
   if (settings->getShowWaveform())
     connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
-  connect(settings_dialog, &SettingsDialog::ffmpegPathChanged, widget_waveform, &WaveformWidget::setFfmpegPath);
-  connect(settings_dialog, &SettingsDialog::checkConvertMonoChanged, widget_waveform, &WaveformWidget::setFfmpegConvertToMono);
 
 
 
