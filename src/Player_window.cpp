@@ -213,8 +213,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(button_open, &QPushButton::clicked, this, &PlayerWindow::openFileFromSelector);
   connect(button_cancel, &QPushButton::clicked, audio_player, &AudioPlayer::cancelDecoding);
   connect(button_play, &QPushButton::clicked, this, &PlayerWindow::playAudio);
-  connect(button_pause, &QPushButton::clicked, audio_player, &AudioPlayer::pausePlaying);
-  connect(button_stop, &QPushButton::clicked, audio_player, &AudioPlayer::stopPlaying);
+  connect(button_pause, &QPushButton::clicked, this, &PlayerWindow::pauseAudio);
+  connect(button_stop, &QPushButton::clicked, this, &PlayerWindow::stopAudio);
   connect(button_bwd10, &QPushButton::clicked, [this](){ bfReadingPosition(-10000); });
   connect(button_bwd5, &QPushButton::clicked, [this](){ bfReadingPosition(-5000); });
   connect(button_fwd5, &QPushButton::clicked, [this](){ bfReadingPosition(5000); });
@@ -342,18 +342,40 @@ void PlayerWindow::openFileFromSelector()
 void PlayerWindow::playAudio()
 {
   if (audio_player->getStatus() == AudioPlayer::Stopped)
-    audio_player->startPlaying();
+    {
+      audio_player->startPlaying();
+      widget_waveform->resetBreakPoint();
+    }
   else
-    audio_player->resumePlaying();
+    {
+      int breakpointPos = widget_waveform->getBreakPoint();
+      audio_player->moveReadingPosition(qMax(0, breakpointPos));
+      audio_player->resumePlaying();
+    }
 }
 
+// Pause audio playing
+void PlayerWindow::pauseAudio()
+{
+    audio_player->pausePlaying();
+}
+
+// Stops audio playing
+void PlayerWindow::stopAudio()
+{
+    audio_player->stopPlaying();
+    widget_waveform->resetBreakPoint();
+}
 
 // Moves reading position backward or forward (waveform). Parameter: position change in milliseconds
 void PlayerWindow::moveReadingPosition()
 {
   int new_position = widget_waveform->value();
   if (new_position >= widget_waveform->maximum())
-    audio_player->stopPlaying();
+    {
+      audio_player->stopPlaying();
+      widget_waveform->resetBreakPoint();
+    }
   else
     audio_player->moveReadingPosition(qMax(0, new_position));
 }
