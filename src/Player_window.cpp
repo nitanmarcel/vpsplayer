@@ -348,9 +348,17 @@ void PlayerWindow::playAudio()
     }
   else
     {
-      int breakpointPos = widget_waveform->getBreakPoint();
-      audio_player->moveReadingPosition(qMax(0, breakpointPos));
       audio_player->resumePlaying();
+    }
+}
+
+void PlayerWindow::playAudioFromBreakpoint()
+{
+    if (audio_player->getStatus() != AudioPlayer::Stopped && widget_waveform->getBreakPoint() != 0)
+    {
+        int breakpointPos = widget_waveform->getBreakPoint();
+        audio_player->moveReadingPosition(qMax(0, breakpointPos));
+        playAudio();
     }
 }
 
@@ -570,6 +578,10 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
             button_play->click();
         else if (button_pause->isEnabled())
             button_pause->click();
+    }
+    else if (e->key() == Qt::Key_C || e->key() == Qt::Key_C || e->key() == Qt::Key_V || e->key() == Qt::Key_B || e->key() == Qt::Key_N || e->key() == Qt::Key_M)
+    {
+        playAudioFromBreakpoint();
     }
     else if (e->key() == Qt::Key_Space && key_modifier)
     {
