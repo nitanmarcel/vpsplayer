@@ -581,7 +581,17 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     }
     else if (e->key() == Qt::Key_C || e->key() == Qt::Key_C || e->key() == Qt::Key_V || e->key() == Qt::Key_B || e->key() == Qt::Key_N || e->key() == Qt::Key_M)
     {
-        playAudioFromBreakpoint();
+        if (widget_waveform->getBreakPoint() > 0)
+        {
+            if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
+            {
+                pauseAudio();
+            }
+            else if (audio_player->getStatus() != AudioPlayer::Stopped)
+            {
+                playAudioFromBreakpoint();
+            }
+        }
     }
     else if (e->key() == Qt::Key_Space && key_modifier)
     {
