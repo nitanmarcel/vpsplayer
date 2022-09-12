@@ -175,9 +175,15 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_main->addWidget(groupbox_settings);
   layout_main->addWidget(groupbox_player);
   if (settings->getShowWaveform())
-    layout_main->addWidget(groupbox_waveform);
+    {
+      layout_main->addWidget(groupbox_waveform);
+      groupbox_progess_bar->setEnabled(false);
+  }
   else
+  {
       layout_main->addWidget(groupbox_progess_bar);
+      groupbox_waveform->setEnabled(false);
+  }
   layout_main->addWidget(groupbox_progress);
   QWidget *widget_main = new QWidget;
   widget_main->setLayout(layout_main);
