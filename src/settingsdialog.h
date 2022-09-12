@@ -21,6 +21,8 @@ private:
     void emitCheckUseHighQualityChanged(bool enabled);
     void emitCheckFormantPreservedChanged(bool enabled);
     void emitCheckEnableWaveformChanged(bool enabled);
+    void emitPitchModifierValueChanged(int value);
+    void emitSpeedModifierValueChanged(int value);
 public:
     SettingsDialog();
     ~SettingsDialog(); // Destructor
@@ -30,6 +32,8 @@ signals:
     bool checkUseHighQualityChanged(bool);
     bool checkFormantPreservedChanged(bool);
     bool checkEnableWaveformChanged(bool enabled);
+    int pitchModifierValueChanged(int value);
+    int speedModifierValueChanged(int value);
 };
 
 #endif // SETTINGSDIALOG_H

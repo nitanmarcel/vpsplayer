@@ -45,6 +45,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
   key_modifier = false;
+  pitchModifierValue = settings->getPitchModifierValue();
+  speedModifierValue = settings->getSpeedModifierValue();
 
   const QIcon open_icon(QStringLiteral(":/open-32.png"));
   const QIcon backward_icon(QStringLiteral(":/backward-32.png"));
@@ -239,6 +241,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
   if (settings->getShowWaveform())
     connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+
+  connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchModifierValueChanged), [this](int value){ pitchModifierValue = value; });
+  connect(settings_dialog, qOverload<int>(&SettingsDialog::speedModifierValueChanged), [this](int value){ speedModifierValue = value; });
 
 
 
@@ -615,22 +620,22 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     else if (e->key() == Qt::Key_D)
     {
         if (playback_speed < 24)
-            emit playbackSpeedChanged(playback_speed + (key_modifier ? 5 : 1));
+            emit playbackSpeedChanged(playback_speed + (key_modifier ? speedModifierValue : 1));
     }
     else if (e->key() == Qt::Key_A)
     {
         if (playback_speed > -24)
-            emit playbackSpeedChanged(playback_speed - (key_modifier ? 5 : 1));
+            emit playbackSpeedChanged(playback_speed - (key_modifier ? speedModifierValue : 1));
     }
     else if (e->key() == Qt::Key_W)
     {
         if (pitch_value < 12)
-            emit pitchValueChanged(pitch_value + (key_modifier ? 5 : 1));
+            emit pitchValueChanged(pitch_value + (key_modifier ? pitchModifierValue : 1));
     }
     else if (e->key() == Qt::Key_S)
     {
         if (pitch_value > -12)
-            emit pitchValueChanged(pitch_value - (key_modifier ? 5 : 1));
+            emit pitchValueChanged(pitch_value - (key_modifier ? pitchModifierValue : 1));
     }
 
 }

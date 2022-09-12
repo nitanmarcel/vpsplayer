@@ -15,10 +15,14 @@ public:
     void setPerserveFormatShape(bool enabled);
     void setEngineIndex(int index);
     void setShowWaveform(bool enabled);
+    void setSpeedModifierValue(int value);
+    void setPitchModifierValue(int value);
     bool getHighQuality();
     bool getPerserveFormatShape();
     bool getShowWaveform();
     int getEngineIndex();
+    int getPitchModifierValue();
+    int getSpeedModifierValue();
 
 private:
     QSettings *settings;
@@ -26,6 +30,8 @@ private:
     bool highQuality;
     bool perserveFormatShape;
     bool showWaveform;
+    int pitchModifierValue;
+    int speedModifierValue;
 };
 
 #endif // APPSETTINGS_H

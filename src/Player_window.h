@@ -85,6 +85,9 @@ private:
   void updateReadingPosition(int position); // Updates current reading position
   void updateSpeed(int speed); // Updates the speed
   void updateStatus(AudioPlayer::Status status); // Updates the window based on the player status
+
+  int pitchModifierValue;
+  int speedModifierValue;
 protected:
   void dragEnterEvent(QDragEnterEvent *e);
   void dropEvent(QDropEvent *e);
