@@ -7,12 +7,21 @@ AppSettings::AppSettings(QObject *parent)
 {
     QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + "vpsplayer" + QDir::separator();
     settings =  new QSettings(settingsPath + "settings.ini", QSettings::IniFormat);
+
     engineIndex = settings->value("engine_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("preserve_formant_shape", true).value<bool>();
     showWaveform = settings->value("show_waveform", false).value<bool>();
     pitchModifierValue = settings->value("pitch_modifier_value", 5).value<int>();
     speedModifierValue = settings->value("speed_modifier_value", 5).value<int>();
+
+    pauseKey = settings->value("pause_key", Qt::Key_Space).value<int>();
+    pitchSliderKeyPlus = settings->value("pitch_slider_key_plus", Qt::Key_W).value<int>();
+    pitchSliderKeyMinus = settings->value("pitch_slider_key_minus", Qt::Key_S).value<int>();
+    speedSliderKeyPlus = settings->value("speed_slider_key_plus", Qt::Key_D).value<int>();
+    speedSliderKeyMinus = settings->value("speed_slider_key_minus", Qt::Key_A).value<int>();
+    playbackSliderKeyPlus = settings->value("playback_slider_key_plus", Qt::Key_E).value<int>();
+    playbackSliderKeyMinus = settings->value("playback_slider_key_minus", Qt::Key_Q).value<int>();
 
 }
 
@@ -62,6 +71,55 @@ void AppSettings::setSpeedModifierValue(int value)
     settings->sync();
 }
 
+void AppSettings::setPauseKey(int key)
+{
+    pauseKey = key;
+    settings->setValue("pause_key", key);
+    settings->sync();
+}
+
+void AppSettings::setPitchSliderKeyPlus(int key)
+{
+    pitchSliderKeyMinus = key;
+    settings->setValue("pitch_slider_key_plus", key);
+    settings->sync();
+}
+
+void AppSettings::setPitchSliderKeyMinus(int key)
+{
+    pitchSliderKeyMinus = key;
+    settings->setValue("pitch_slider_key_minus", key);
+    settings->sync();
+}
+
+void AppSettings::setSpeedSliderKeyPlus(int key)
+{
+    speedSliderKeyMinus = key;
+    settings->setValue("speed_slider_key_plus", key);
+    settings->sync();
+}
+
+void AppSettings::setSpeedSliderKeyMinus(int key)
+{
+    speedSliderKeyMinus = key;
+    settings->setValue("speed_slider_key_minus", key);
+    settings->sync();
+}
+
+void AppSettings::setPlaybackSliderKeyPlus(int key)
+{
+    playbackSliderKeyMinus = key;
+    settings->setValue("playback_slider_key_plus", key);
+    settings->sync();
+}
+
+void AppSettings::setPlaybackSliderKeyMinus(int key)
+{
+    playbackSliderKeyMinus = key;
+    settings->setValue("playback_slider_key_minus", key);
+    settings->sync();
+}
+
 int AppSettings::getEngineIndex()
 {
     return engineIndex;
@@ -90,4 +148,39 @@ int AppSettings::getPitchModifierValue()
 int AppSettings::getSpeedModifierValue()
 {
     return speedModifierValue;
+}
+
+int AppSettings::getPauseKey()
+{
+    return pauseKey;
+}
+
+int AppSettings::getPitchSliderKeyPlus()
+{
+    return pitchSliderKeyPlus;
+}
+
+int AppSettings::getPitchSliderKeyMinus()
+{
+    return pitchSliderKeyMinus;
+}
+
+int AppSettings::getSpeedSliderKeyPlus()
+{
+    return speedSliderKeyPlus;
+}
+
+int AppSettings::getSpeedSliderKeyMinus()
+{
+    return speedSliderKeyMinus;
+}
+
+int AppSettings::getPlaybackSliderKeyPlus()
+{
+    return playbackSliderKeyPlus;
+}
+
+int AppSettings::getPlaybackSliderKeyMinus()
+{
+    return playbackSliderKeyMinus;
 }

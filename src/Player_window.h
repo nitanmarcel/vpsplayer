@@ -88,6 +88,14 @@ private:
 
   int pitchModifierValue;
   int speedModifierValue;
+  int pauseKey;
+  int pitchSliderKeyPlus;
+  int pitchSliderKeyMinus;
+  int speedSliderKeyPlus;
+  int speedSliderKeyMinus;
+  int playbackSliderKeyPlus;
+  int playbackSliderKeyMinus;
+
 protected:
   void dragEnterEvent(QDragEnterEvent *e);
   void dropEvent(QDropEvent *e);
