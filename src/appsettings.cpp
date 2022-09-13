@@ -12,8 +12,8 @@ AppSettings::AppSettings(QObject *parent)
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("preserve_formant_shape", true).value<bool>();
     showWaveform = settings->value("show_waveform", false).value<bool>();
-    pitchModifierValue = settings->value("pitch_modifier_value", 5).value<int>();
-    speedModifierValue = settings->value("speed_modifier_value", 5).value<int>();
+    pitchModifierValue = settings->value("pitch_modifier_value", 2).value<int>();
+    speedModifierValue = settings->value("speed_modifier_value", 2).value<int>();
 
     pauseKey = settings->value("pause_key", Qt::Key_Space).value<int>();
     pitchSliderKeyPlus = settings->value("pitch_slider_key_plus", Qt::Key_W).value<int>();

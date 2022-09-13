@@ -132,7 +132,7 @@ SettingsDialog::SettingsDialog()
     layout_modifier_settings_pitch->addWidget(modifier_settings_pitch_spinbox);
 
     QHBoxLayout *layout_modifier_settings_speed = new QHBoxLayout;
-    QLabel *modifier_settings_speed_label = new QLabel("Pitch modifier value");
+    QLabel *modifier_settings_speed_label = new QLabel("Speed modifier value");
     QSpinBox *modifier_settings_speed_spinbox = new QSpinBox;
     modifier_settings_speed_spinbox->setMaximum(10);
     modifier_settings_speed_spinbox->setMinimum(0);
