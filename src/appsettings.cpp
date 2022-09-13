@@ -8,6 +8,7 @@ AppSettings::AppSettings(QObject *parent)
     QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + "vpsplayer" + QDir::separator();
     settings =  new QSettings(settingsPath + "settings.ini", QSettings::IniFormat);
 
+    geometry = settings->value("geometry", QByteArray()).value<QByteArray>();
     engineIndex = settings->value("engine_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("preserve_formant_shape", true).value<bool>();
@@ -27,6 +28,13 @@ AppSettings::AppSettings(QObject *parent)
 
 AppSettings::~AppSettings()
 {
+}
+
+void AppSettings::setGeometry(QByteArray _geometry)
+{
+    geometry = _geometry;
+    settings->setValue("geometry", geometry);
+    settings->sync();
 }
 
 void AppSettings::setEngineIndex(int index)
@@ -118,6 +126,11 @@ void AppSettings::setPlaybackSliderKeyMinus(int key)
     playbackSliderKeyMinus = key;
     settings->setValue("playback_slider_key_minus", key);
     settings->sync();
+}
+
+QByteArray AppSettings::getGeometry()
+{
+    return geometry;
 }
 
 int AppSettings::getEngineIndex()

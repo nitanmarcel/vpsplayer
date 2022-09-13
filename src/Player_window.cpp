@@ -40,7 +40,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 
   settings = new AppSettings(this);
   settings_dialog = new SettingsDialog();
-
   clearFocus();
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
@@ -278,6 +277,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
     else
       QMessageBox::critical(this, "File not found", QString("\"%1\" is not a valid file.").arg(file_info.filePath()), QMessageBox::Ok);
   }
+
+  resize(680, height());
+  restoreGeometry(settings->getGeometry());
 }
 
 
@@ -651,5 +653,10 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
             }
         }
     }
+}
+
+void PlayerWindow::resizeEvent(QResizeEvent *)
+{
+    settings->setGeometry(saveGeometry());
 }
 

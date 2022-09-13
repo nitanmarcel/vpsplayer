@@ -64,8 +64,6 @@ int main(int argc, char *argv[])
   }
   
   PlayerWindow window(app_icon, filename);
-  window.resize(680, window.height());
-  window.clearFocus();
   window.show();
   return app.exec();
 }

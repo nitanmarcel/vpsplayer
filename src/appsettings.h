@@ -11,6 +11,7 @@ class AppSettings : public QObject
 public:
     AppSettings(QObject *parent = nullptr);
     ~AppSettings();
+    void setGeometry(QByteArray geometry);
     void setHighQuality(bool enabled);
     void setPerserveFormatShape(bool enabled);
     void setEngineIndex(int index);
@@ -24,6 +25,7 @@ public:
     void setSpeedSliderKeyMinus(int key);
     void setPlaybackSliderKeyPlus(int key);
     void setPlaybackSliderKeyMinus(int key);
+    QByteArray getGeometry();
     bool getHighQuality();
     bool getPerserveFormatShape();
     bool getShowWaveform();
@@ -40,6 +42,7 @@ public:
 
 private:
     QSettings *settings;
+    QByteArray geometry;
     int engineIndex;
     bool highQuality;
     bool perserveFormatShape;
