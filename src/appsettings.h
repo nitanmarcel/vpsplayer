@@ -18,7 +18,9 @@ public:
     void setShowWaveform(bool enabled);
     void setSpeedModifierValue(int value);
     void setPitchModifierValue(int value);
+    void setModifierKey(int key);
     void setPauseKey(int key);
+    void setPauseKeyAlt(int key);
     void setPitchSliderKeyPlus(int key);
     void setPitchSliderKeyMinus(int key);
     void setSpeedSliderKeyPlus(int key);
@@ -32,7 +34,9 @@ public:
     int getEngineIndex();
     int getPitchModifierValue();
     int getSpeedModifierValue();
+    int getModifierKey();
     int getPauseKey();
+    int getPauseKeyAlt();
     int getPitchSliderKeyPlus();
     int getPitchSliderKeyMinus();
     int getSpeedSliderKeyPlus();
@@ -49,7 +53,9 @@ private:
     bool showWaveform;
     int pitchModifierValue;
     int speedModifierValue;
+    int modifierKey;
     int pauseKey;
+    int pauseKeyAlt;
     int pitchSliderKeyPlus;
     int pitchSliderKeyMinus;
     int speedSliderKeyPlus;

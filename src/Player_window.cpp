@@ -44,7 +44,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
   key_modifier = false;
+  modifierKey = settings->getModifierKey();
   pauseKey = settings->getPauseKey();
+  pauseKeyAlt = settings->getPauseKeyAlt();
   pitchModifierValue = settings->getPitchModifierValue();
   speedModifierValue = settings->getSpeedModifierValue();
   pitchSliderKeyPlus = settings->getPitchSliderKeyPlus();
@@ -254,7 +256,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchModifierValueChanged), [this](int value){ pitchModifierValue = value; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::speedModifierValueChanged), [this](int value){ speedModifierValue = value; });
 
+  connect(settings_dialog, qOverload<int>(&SettingsDialog::modifierKeyChanged), [this](int key){ modifierKey = key; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pauseKeyChanged), [this](int key){ pauseKey = key; });
+  connect(settings_dialog, qOverload<int>(&SettingsDialog::pauseKeyAltChanged), [this](int key){ pauseKeyAlt = key; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchSliderKeyPlusChanged), [this](int key){ pitchSliderKeyPlus = key; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchSliderKeyMinusChanged), [this](int key){ pitchSliderKeyMinus = key; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::speedSliderKeyPlusChanged), [this](int key){ speedSliderKeyPlus = key; });
@@ -583,13 +587,13 @@ void PlayerWindow::dropEvent(QDropEvent *e)
 
 void PlayerWindow::keyReleaseEvent(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_Shift && key_modifier)
+    if (e->key() == modifierKey && key_modifier)
         key_modifier = false;
 }
 
 void PlayerWindow::keyPressEvent(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_Shift && !key_modifier)
+    if (e->key() == modifierKey && !key_modifier)
     {
         key_modifier = true;
     }
@@ -600,7 +604,21 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
         else if (button_pause->isEnabled())
             button_pause->click();
     }
-    else if (e->key() == pauseKey && key_modifier)
+    else if (e->key() == pauseKeyAlt && !key_modifier)
+    {
+        if (widget_waveform->getBreakPoint() > 0)
+        {
+            if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
+            {
+                pauseAudio();
+            }
+            else if (audio_player->getStatus() != AudioPlayer::Stopped)
+            {
+                playAudioFromBreakpoint();
+            }
+        }
+    }
+    else if ((e->key() == pauseKey || e->key() == pauseKeyAlt) && key_modifier)
     {
         if (button_stop->isEnabled())
             button_stop->click();
@@ -638,20 +656,6 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     {
         if (pitch_value > -12)
             emit pitchValueChanged(pitch_value - (key_modifier ? pitchModifierValue : 1));
-    }
-    else if (e->key() == Qt::Key_C || e->key() == Qt::Key_V || e->key() == Qt::Key_B || e->key() == Qt::Key_N || e->key() == Qt::Key_M)
-    {
-        if (widget_waveform->getBreakPoint() > 0)
-        {
-            if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
-            {
-                pauseAudio();
-            }
-            else if (audio_player->getStatus() != AudioPlayer::Stopped)
-            {
-                playAudioFromBreakpoint();
-            }
-        }
     }
 }
 

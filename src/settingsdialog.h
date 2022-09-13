@@ -18,7 +18,9 @@ private:
     QWidget *widget_settings;
     AppSettings *app_settings;
 
+    KeyEdit *key_settings_modifier_linedit;
     KeyEdit *key_settings_pause_linedit;
+    KeyEdit *key_settings_pause_alt_linedit;
     KeyEdit *key_settings_pitch_plus_linedit;
     KeyEdit *key_settings_pitch_minus_linedit;
     KeyEdit *key_settings_playback_plus_linedit;
@@ -36,7 +38,9 @@ private:
     void emitCheckEnableWaveformChanged(bool enabled);
     void emitPitchModifierValueChanged(int value);
     void emitSpeedModifierValueChanged(int value);
+    void emitModifierKeyChanged(int key);
     void emitPauseKey(int key);
+    void emitPauseKeyAltChanged(int key);
     void emitPitchSliderKeyPlus(int key);
     void emitPitchSliderKeyMinus(int key);
     void emitSpeedSliderKeyPlus(int key);
@@ -60,7 +64,9 @@ signals:
     bool checkEnableWaveformChanged(bool enabled);
     int pitchModifierValueChanged(int value);
     int speedModifierValueChanged(int value);
+    int modifierKeyChanged(int key);
     int pauseKeyChanged(int key);
+    int pauseKeyAltChanged(int key);
     int pitchSliderKeyPlusChanged(int key);
     int pitchSliderKeyMinusChanged(int key);
     int speedSliderKeyPlusChanged(int key);

@@ -47,15 +47,35 @@ SettingsDialog::SettingsDialog()
     QGroupBox *groupbox_keys_settings = new QGroupBox("Keybinds");
     QVBoxLayout *layout_keys_settings = new QVBoxLayout;
 
+    QHBoxLayout *layout_key_settings_modifier = new QHBoxLayout;
+    QLabel *key_settings_modifier_label = new QLabel("Modifier");
+    key_settings_modifier_linedit = new KeyEdit;
+    key_settings_modifier_linedit->setMaximumWidth(100);
+    key_settings_modifier_linedit->setReadOnly(true);
+    key_settings_modifier_linedit->setText(QKeySequence(app_settings->getModifierKey()).toString());
+    layout_key_settings_modifier->addWidget(key_settings_modifier_label);
+    layout_key_settings_modifier->addWidget(key_settings_modifier_linedit);
+    layout_keys_settings->addLayout(layout_key_settings_modifier);
+
     QHBoxLayout *layout_key_settings_pause = new QHBoxLayout;
-    QLabel *key_settings_pitch_pause_label = new QLabel("Pause");
+    QLabel *key_settings_pause_label = new QLabel("Pause/Resume");
     key_settings_pause_linedit = new KeyEdit;
     key_settings_pause_linedit->setMaximumWidth(100);
     key_settings_pause_linedit->setReadOnly(true);
     key_settings_pause_linedit->setText(QKeySequence(app_settings->getPauseKey()).toString());
-    layout_key_settings_pause->addWidget(key_settings_pitch_pause_label);
+    layout_key_settings_pause->addWidget(key_settings_pause_label);
     layout_key_settings_pause->addWidget(key_settings_pause_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pause);
+
+    QHBoxLayout *layout_key_settings_pause_alt = new QHBoxLayout;
+    QLabel *key_settings_pause_alt_label = new QLabel("Pause/Resume breakpoint");
+    key_settings_pause_alt_linedit = new KeyEdit;
+    key_settings_pause_alt_linedit->setMaximumWidth(100);
+    key_settings_pause_alt_linedit->setReadOnly(true);
+    key_settings_pause_alt_linedit->setText(QKeySequence(app_settings->getPauseKey()).toString());
+    layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_label);
+    layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_linedit);
+    layout_keys_settings->addLayout(layout_key_settings_pause_alt);
 
     QHBoxLayout *layout_key_settings_pitch_plus = new QHBoxLayout;
     QLabel *key_settings_pitch_plus_label = new QLabel("Pitch+");
@@ -168,7 +188,9 @@ SettingsDialog::SettingsDialog()
     connect(modifier_settings_pitch_spinbox, qOverload<int>(&QSpinBox::valueChanged), [this](int value){ emitPitchModifierValueChanged(value); });
     connect(modifier_settings_speed_spinbox, qOverload<int>(&QSpinBox::valueChanged), [this](int value){ emitSpeedModifierValueChanged(value); });
 
+    connect(key_settings_modifier_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "modifier_key"; waitForKeyInput = hasFocus; });
     connect(key_settings_pause_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "pause_key"; waitForKeyInput = hasFocus; });
+    connect(key_settings_pause_alt_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "pause_key_alt"; waitForKeyInput = hasFocus; });
     connect(key_settings_pitch_plus_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "pitch_plus"; waitForKeyInput = hasFocus; });
     connect(key_settings_pitch_minus_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "pitch_minus"; waitForKeyInput = hasFocus; });
     connect(key_settings_speed_plus_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "speed_plus"; waitForKeyInput = hasFocus; });
@@ -229,10 +251,22 @@ void SettingsDialog::emitSpeedModifierValueChanged(int value)
     emit speedModifierValueChanged(value);
 }
 
+void SettingsDialog::emitModifierKeyChanged(int key)
+{
+    app_settings->setModifierKey(key);
+    emit modifierKeyChanged(key);
+}
+
 void SettingsDialog::emitPauseKey(int key)
 {
     app_settings->setPauseKey(key);
     emit pauseKeyChanged(key);
+}
+
+void SettingsDialog::emitPauseKeyAltChanged(int key)
+{
+    app_settings->setPauseKeyAlt(key);
+    emit pauseKeyAltChanged(key);
 }
 
 void SettingsDialog::emitPitchSliderKeyPlus(int key)
@@ -275,11 +309,23 @@ void SettingsDialog::keyPressEvent(QKeyEvent *event)
 {
     if (!waitForKeyInput)
         return;
+    if (keyInputReciever == "modifier_key")
+    {
+        key_settings_modifier_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_modifier_linedit->clearFocus();
+        emitModifierKeyChanged(event->key());
+    }
     if (keyInputReciever == "pause_key")
     {
         key_settings_pause_linedit->setText(QKeySequence(event->key()).toString());
         key_settings_pause_linedit->clearFocus();
         emitPauseKey(event->key());
+    }
+    if (keyInputReciever == "pause_key_alt")
+    {
+        key_settings_pause_alt_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_pause_alt_linedit->clearFocus();
+        emitPauseKeyAltChanged(event->key());
     }
     if (keyInputReciever == "pitch_plus")
     {

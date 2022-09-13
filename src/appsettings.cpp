@@ -16,7 +16,9 @@ AppSettings::AppSettings(QObject *parent)
     pitchModifierValue = settings->value("pitch_modifier_value", 2).value<int>();
     speedModifierValue = settings->value("speed_modifier_value", 2).value<int>();
 
+    modifierKey = settings->value("modifier_key", Qt::Key_Shift).value<int>();
     pauseKey = settings->value("pause_key", Qt::Key_Space).value<int>();
+    pauseKeyAlt = settings->value("pause_key_alt", Qt::Key_Alt).value<int>();
     pitchSliderKeyPlus = settings->value("pitch_slider_key_plus", Qt::Key_W).value<int>();
     pitchSliderKeyMinus = settings->value("pitch_slider_key_minus", Qt::Key_S).value<int>();
     speedSliderKeyPlus = settings->value("speed_slider_key_plus", Qt::Key_D).value<int>();
@@ -79,10 +81,23 @@ void AppSettings::setSpeedModifierValue(int value)
     settings->sync();
 }
 
+void AppSettings::setModifierKey(int key)
+{
+    modifierKey = key;
+    settings->setValue("modifier_key", key);
+}
+
 void AppSettings::setPauseKey(int key)
 {
     pauseKey = key;
     settings->setValue("pause_key", key);
+    settings->sync();
+}
+
+void AppSettings::setPauseKeyAlt(int key)
+{
+    pauseKey = key;
+    settings->setValue("pause_key_alt", key);
     settings->sync();
 }
 
@@ -163,9 +178,19 @@ int AppSettings::getSpeedModifierValue()
     return speedModifierValue;
 }
 
+int AppSettings::getModifierKey()
+{
+    return modifierKey;
+}
+
 int AppSettings::getPauseKey()
 {
     return pauseKey;
+}
+
+int AppSettings::getPauseKeyAlt()
+{
+    return pauseKeyAlt;
 }
 
 int AppSettings::getPitchSliderKeyPlus()

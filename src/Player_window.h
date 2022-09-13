@@ -88,7 +88,9 @@ private:
 
   int pitchModifierValue;
   int speedModifierValue;
+  int modifierKey;
   int pauseKey;
+  int pauseKeyAlt;
   int pitchSliderKeyPlus;
   int pitchSliderKeyMinus;
   int speedSliderKeyPlus;
