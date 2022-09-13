@@ -10,6 +10,7 @@ RCC_DIR = build_tmp
 HEADERS = src/Audio_player.h \
           src/Player_window.h \
           src/Playing_progress.h \
+          src/keyedit.h \
           src/settingsdialog.h \
           src/appsettings.h \
           src/tools.h
@@ -17,6 +18,7 @@ SOURCES = src/main.cpp \
           src/Audio_player.cpp \
           src/Player_window.cpp \
           src/Playing_progress.cpp \
+          src/keyedit.cpp \
           src/settingsdialog.cpp \
           src/appsettings.cpp \
           src/tools.cpp
