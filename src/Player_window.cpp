@@ -362,7 +362,6 @@ void PlayerWindow::playAudio()
   if (audio_player->getStatus() == AudioPlayer::Stopped)
     {
       audio_player->startPlaying();
-      widget_waveform->resetBreakPoint();
     }
   else
     {
@@ -400,7 +399,6 @@ void PlayerWindow::moveReadingPosition()
   if (new_position >= widget_waveform->maximum())
     {
       audio_player->stopPlaying();
-      widget_waveform->resetBreakPoint();
     }
   else
     audio_player->moveReadingPosition(qMax(0, new_position));
