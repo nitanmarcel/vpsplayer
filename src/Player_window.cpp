@@ -247,7 +247,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
   if (settings->getShowWaveform())
-    connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+  {
+      connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+      connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), audio_player, &AudioPlayer::moveReadingPosition);
+  }
 
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchModifierValueChanged), [this](int value){ pitchModifierValue = value; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::speedModifierValueChanged), [this](int value){ speedModifierValue = value; });
