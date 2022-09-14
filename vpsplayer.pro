@@ -11,6 +11,7 @@ HEADERS = src/Audio_player.h \
           src/Player_window.h \
           src/Playing_progress.h \
           src/keyedit.h \
+          src/menustyle.h \
           src/settingsdialog.h \
           src/appsettings.h \
           src/tools.h
@@ -19,6 +20,7 @@ SOURCES = src/main.cpp \
           src/Player_window.cpp \
           src/Playing_progress.cpp \
           src/keyedit.cpp \
+          src/menustyle.cpp \
           src/settingsdialog.cpp \
           src/appsettings.cpp \
           src/tools.cpp

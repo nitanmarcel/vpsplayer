@@ -16,6 +16,7 @@
 #include <QStandardPaths>
 
 #include "Player_window.h"
+#include "menustyle.h"
 
 
 int main(int argc, char *argv[])
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
   QCoreApplication::setApplicationVersion(QStringLiteral(VERSION_STRING));
   const QIcon app_icon(QStringLiteral(":/vps-64.png"));
   app.setWindowIcon(app_icon);
+  app.setStyle(new MenuStyle());
 
   QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QDir::separator() + "vpsplayer" + QDir::separator();
   if (!QDir(settingsPath).exists())

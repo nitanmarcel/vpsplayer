@@ -60,7 +60,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   const QIcon backward_icon(QStringLiteral(":/backward-32.png"));
   const QIcon forward_icon(QStringLiteral(":/forward-32.png"));
   const QFont fixed_font(QStringLiteral("monospace"));
-  
+
   QMenu *menu_file = menuBar()->addMenu("&File");
   QMenu *menu_help = menuBar()->addMenu(QStringLiteral("&?"));
   action_open = new QAction(open_icon, "&Open", this);
