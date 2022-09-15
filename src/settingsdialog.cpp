@@ -72,7 +72,7 @@ SettingsDialog::SettingsDialog()
     key_settings_pause_alt_linedit = new KeyEdit;
     key_settings_pause_alt_linedit->setMaximumWidth(100);
     key_settings_pause_alt_linedit->setReadOnly(true);
-    key_settings_pause_alt_linedit->setText(QKeySequence(app_settings->getPauseKey()).toString());
+    key_settings_pause_alt_linedit->setText(QKeySequence(app_settings->getPauseKeyAlt()).toString());
     layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_label);
     layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pause_alt);
