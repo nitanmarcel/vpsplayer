@@ -7,6 +7,7 @@ class KeyEdit : public QLineEdit
 public:
   KeyEdit(QWidget *parent = 0);
   ~KeyEdit();
+  void setKey(int keyID);
 
 signals:
   void focussed(bool hasFocus);

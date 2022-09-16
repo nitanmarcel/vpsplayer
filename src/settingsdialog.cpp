@@ -52,7 +52,7 @@ SettingsDialog::SettingsDialog()
     key_settings_modifier_linedit = new KeyEdit;
     key_settings_modifier_linedit->setMaximumWidth(100);
     key_settings_modifier_linedit->setReadOnly(true);
-    key_settings_modifier_linedit->setText(QKeySequence(app_settings->getModifierKey()).toString());
+    key_settings_modifier_linedit->setKey(app_settings->getModifierKey());
     layout_key_settings_modifier->addWidget(key_settings_modifier_label);
     layout_key_settings_modifier->addWidget(key_settings_modifier_linedit);
     layout_keys_settings->addLayout(layout_key_settings_modifier);
@@ -62,7 +62,7 @@ SettingsDialog::SettingsDialog()
     key_settings_pause_linedit = new KeyEdit;
     key_settings_pause_linedit->setMaximumWidth(100);
     key_settings_pause_linedit->setReadOnly(true);
-    key_settings_pause_linedit->setText(QKeySequence(app_settings->getPauseKey()).toString());
+    key_settings_pause_linedit->setKey(app_settings->getPauseKey());
     layout_key_settings_pause->addWidget(key_settings_pause_label);
     layout_key_settings_pause->addWidget(key_settings_pause_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pause);
@@ -72,7 +72,7 @@ SettingsDialog::SettingsDialog()
     key_settings_pause_alt_linedit = new KeyEdit;
     key_settings_pause_alt_linedit->setMaximumWidth(100);
     key_settings_pause_alt_linedit->setReadOnly(true);
-    key_settings_pause_alt_linedit->setText(QKeySequence(app_settings->getPauseKeyAlt()).toString());
+    key_settings_pause_alt_linedit->setKey(app_settings->getPauseKeyAlt());
     layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_label);
     layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pause_alt);
@@ -82,7 +82,7 @@ SettingsDialog::SettingsDialog()
     key_settings_pitch_plus_linedit = new KeyEdit;
     key_settings_pitch_plus_linedit->setMaximumWidth(100);
     key_settings_pitch_plus_linedit->setReadOnly(true);
-    key_settings_pitch_plus_linedit->setText(QKeySequence(app_settings->getPitchSliderKeyPlus()).toString());
+    key_settings_pitch_plus_linedit->setKey(app_settings->getPitchSliderKeyPlus());
     layout_key_settings_pitch_plus->addWidget(key_settings_pitch_plus_label);
     layout_key_settings_pitch_plus->addWidget(key_settings_pitch_plus_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pitch_plus);
@@ -92,7 +92,7 @@ SettingsDialog::SettingsDialog()
     key_settings_pitch_minus_linedit = new KeyEdit;
     key_settings_pitch_minus_linedit->setMaximumWidth(100);
     key_settings_pitch_minus_linedit->setReadOnly(true);
-    key_settings_pitch_minus_linedit->setText(QKeySequence(app_settings->getPitchSliderKeyMinus()).toString());
+    key_settings_pitch_minus_linedit->setKey(app_settings->getPitchSliderKeyMinus());
     layout_key_settings_pitch_minus->addWidget(key_settings_pitch_minus_label);
     layout_key_settings_pitch_minus->addWidget(key_settings_pitch_minus_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pitch_minus);
@@ -102,7 +102,7 @@ SettingsDialog::SettingsDialog()
     key_settings_speed_plus_linedit = new KeyEdit;
     key_settings_speed_plus_linedit->setMaximumWidth(100);
     key_settings_speed_plus_linedit->setReadOnly(true);
-    key_settings_speed_plus_linedit->setText(QKeySequence(app_settings->getSpeedSliderKeyPlus()).toString());
+    key_settings_speed_plus_linedit->setKey(app_settings->getSpeedSliderKeyPlus());
     layout_key_settings_speed_plus->addWidget(key_settings_speed_plus_label);
     layout_key_settings_speed_plus->addWidget(key_settings_speed_plus_linedit);
     layout_keys_settings->addLayout(layout_key_settings_speed_plus);
@@ -112,7 +112,7 @@ SettingsDialog::SettingsDialog()
     key_settings_speed_minus_linedit = new KeyEdit;
     key_settings_speed_minus_linedit->setReadOnly(true);
     key_settings_speed_minus_linedit->setMaximumWidth(100);
-    key_settings_speed_minus_linedit->setText(QKeySequence(app_settings->getSpeedSliderKeyMinus()).toString());
+    key_settings_speed_minus_linedit->setKey(app_settings->getSpeedSliderKeyMinus());
     layout_key_settings_speed_minus->addWidget(key_settings_speed_minus_label);
     layout_key_settings_speed_minus->addWidget(key_settings_speed_minus_linedit);
     layout_keys_settings->addLayout(layout_key_settings_speed_minus);
@@ -123,7 +123,7 @@ SettingsDialog::SettingsDialog()
     key_settings_playback_plus_linedit = new KeyEdit;
     key_settings_playback_plus_linedit->setMaximumWidth(100);
     key_settings_playback_plus_linedit->setReadOnly(true);
-    key_settings_playback_plus_linedit->setText(QKeySequence(app_settings->getPlaybackSliderKeyPlus()).toString());
+    key_settings_playback_plus_linedit->setKey(app_settings->getPlaybackSliderKeyPlus());
     layout_key_settings_playback_plus->addWidget(key_settings_playback_plus_label);
     layout_key_settings_playback_plus->addWidget(key_settings_playback_plus_linedit);
     layout_keys_settings->addLayout(layout_key_settings_playback_plus);
@@ -133,7 +133,7 @@ SettingsDialog::SettingsDialog()
     key_settings_playback_minus_linedit = new KeyEdit;
     key_settings_playback_minus_linedit->setMaximumWidth(100);
     key_settings_playback_minus_linedit->setReadOnly(true);
-    key_settings_playback_minus_linedit->setText(QKeySequence(app_settings->getPlaybackSliderKeyMinus()).toString());
+    key_settings_playback_minus_linedit->setKey(app_settings->getPlaybackSliderKeyMinus());
     layout_key_settings_playback_minus->addWidget(key_settings_playback_minus_label);
     layout_key_settings_playback_minus->addWidget(key_settings_playback_minus_linedit);
     layout_keys_settings->addLayout(layout_key_settings_playback_minus);
@@ -301,7 +301,7 @@ void SettingsDialog::emitPlaybackSliderKeyPlus(int key)
 
 void SettingsDialog::emitPlaybackSliderKeyMinus(int key)
 {
-    app_settings->setPitchSliderKeyMinus(key);
+    app_settings->setPlaybackSliderKeyMinus(key);
     emit playbackSliderKeyMinusChanged(key);
 }
 
@@ -309,62 +309,62 @@ void SettingsDialog::keyPressEvent(QKeyEvent *event)
 {
     if (!waitForKeyInput)
         return;
-    if (keyInputReciever == "modifier_key")
+    else if (keyInputReciever == "modifier_key")
     {
-        key_settings_modifier_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_modifier_linedit->setKey(event->key());
         key_settings_modifier_linedit->clearFocus();
         emitModifierKeyChanged(event->key());
     }
-    if (keyInputReciever == "pause_key")
+    else if (keyInputReciever == "pause_key")
     {
-        key_settings_pause_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_pause_linedit->setKey(event->key());
         key_settings_pause_linedit->clearFocus();
         emitPauseKey(event->key());
     }
-    if (keyInputReciever == "pause_key_alt")
+    else if (keyInputReciever == "pause_key_alt")
     {
-        key_settings_pause_alt_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_pause_alt_linedit->setKey(event->key());
         key_settings_pause_alt_linedit->clearFocus();
         emitPauseKeyAltChanged(event->key());
     }
-    if (keyInputReciever == "pitch_plus")
+    else if (keyInputReciever == "pitch_plus")
     {
-        key_settings_pitch_plus_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_pitch_plus_linedit->setKey(event->key());
         key_settings_pitch_plus_linedit->clearFocus();
         emitPitchSliderKeyPlus(event->key());
     }
 
-    if (keyInputReciever == "pitch_minus")
+    else if (keyInputReciever == "pitch_minus")
     {
-        key_settings_pitch_minus_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_pitch_minus_linedit->setKey(event->key());
         key_settings_pitch_minus_linedit->clearFocus();
         emitPitchSliderKeyMinus(event->key());
     }
 
-    if (keyInputReciever == "speed_plus")
+    else if (keyInputReciever == "speed_plus")
     {
-        key_settings_speed_plus_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_speed_plus_linedit->setKey(event->key());
         key_settings_speed_plus_linedit->clearFocus();
         emitSpeedSliderKeyPlus(event->key());
     }
 
-    if (keyInputReciever == "speed_minus")
+    else if (keyInputReciever == "speed_minus")
     {
-        key_settings_speed_minus_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_speed_minus_linedit->setKey(event->key());
         key_settings_speed_minus_linedit->clearFocus();
         emitSpeedSliderKeyMinus(event->key());
     }
 
-    if (keyInputReciever == "playback_plus")
+    else if (keyInputReciever == "playback_plus")
     {
-        key_settings_playback_plus_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_playback_plus_linedit->setKey(event->key());
         key_settings_playback_plus_linedit->clearFocus();
         emitPlaybackSliderKeyPlus(event->key());
     }
 
-    if (keyInputReciever == "playback_minus")
+    else if (keyInputReciever == "playback_minus")
     {
-        key_settings_playback_minus_linedit->setText(QKeySequence(event->key()).toString());
+        key_settings_playback_minus_linedit->setKey(event->key());
         key_settings_playback_minus_linedit->clearFocus();
         emitPlaybackSliderKeyMinus(event->key());
     }
