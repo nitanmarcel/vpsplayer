@@ -5,9 +5,8 @@
 // VPS Player is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with VPS Player. If not, see <http://www.gnu.org/licenses/>.
 
-#include <QApplication>
+#include <singleapplication.h>
 #include <QCommandLineParser>
-#include <QCoreApplication>
 #include <QIcon>
 #include <QString>
 #include <QStringList>
@@ -16,12 +15,14 @@
 #include <QStandardPaths>
 
 #include "Player_window.h"
+#include "messagereceiver.h"
 #include "menustyle.h"
 
 
 int main(int argc, char *argv[])
 {
-  QApplication app(argc, argv);
+    SingleApplication app(argc, argv, true,
+        SingleApplication::Mode::User | SingleApplication::Mode::ExcludeAppPath);
   QCoreApplication::setApplicationName(QStringLiteral("VPS Player"));
   QCoreApplication::setApplicationVersion(QStringLiteral(VERSION_STRING));
   const QIcon app_icon(QStringLiteral(":/vps-64.png"));
@@ -53,19 +54,37 @@ int main(int argc, char *argv[])
   app.setStyleSheet(styleSheet);
 
   QString filename;
+  QCommandLineParser parser;
+  parser.setApplicationDescription("High quality Variable Pitch and Speed audio player");
+  parser.addHelpOption();
+  parser.addVersionOption();
+  parser.addPositionalArgument("file", "Audio file to open (optional)", "[file]");
+  parser.process(app);
+  const QStringList arguments = parser.positionalArguments();
+  if (!arguments.isEmpty())
+    filename = arguments.first();
+
+  if (app.isSecondary())
   {
-    QCommandLineParser parser;
-    parser.setApplicationDescription("High quality Variable Pitch and Speed audio player");
-    parser.addHelpOption();
-    parser.addVersionOption();
-    parser.addPositionalArgument("file", "Audio file to open (optional)", "[file]");
-    parser.process(app);
-    const QStringList arguments = parser.positionalArguments();
-    if (!arguments.isEmpty())
-      filename = arguments.first();
+      if (!filename.isEmpty())
+        app.sendMessage(filename.toUtf8());
   }
-  
-  PlayerWindow window(app_icon, filename);
-  window.show();
-  return app.exec();
+  else {
+      PlayerWindow window(app_icon, filename);
+      MessageReceiver msgReceiver;
+      QObject::connect(
+          &app,
+          &SingleApplication::receivedMessage,
+          &msgReceiver,
+          &MessageReceiver::receivedMessage
+      );
+      QObject::connect(
+                  &msgReceiver,
+                  &MessageReceiver::requestedFile,
+                  &window,
+                  &PlayerWindow::openFile
+      );
+      window.show();
+      return app.exec();
+  }
 }

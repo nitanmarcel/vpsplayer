@@ -65,11 +65,11 @@ private:
 public:
   PlayerWindow(const QIcon &app_icon, const QString &filename = QString()); // Constructor
   ~PlayerWindow(); // Destructor
+  void openFile(const QFileInfo &file_info); // Open file given in parameter
 
 private:
   void displayAudioDecodingError(QAudioDecoder::Error error); // Prompt an error popup for an audio decoding error
   void displayAudioDeviceError(QAudio::Error error); // Prompt an error popup for an audio device error
-  void openFile(const QFileInfo &file_info); // Open file given in parameter
   void openFileFromSelector(); // Open a new file (chosen with a file selector)
   void playAudio(); // Start or resume audio playing
   void playAudioFromBreakpoint(); // Starts or resumes audio playing from a set breakpoint

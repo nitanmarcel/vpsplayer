@@ -1,4 +1,5 @@
-TEMPLATE = app
+include(thirdparty/SingleApplication/singleapplication.pri)
+DEFINES += QAPPLICATION_CLASS=QApplication
 CONFIG += qt warn_on release link_pkgconfig c++14 exceptions_off
 QT += widgets multimedia
 LIBS += -lwaveformwidget
@@ -7,20 +8,22 @@ DEFINES += VERSION_STRING=\\\"1.0.4\\\"
 MOC_DIR = build_tmp
 OBJECTS_DIR = build_tmp
 RCC_DIR = build_tmp
-HEADERS = src/Audio_player.h \
+HEADERS += src/Audio_player.h \
           src/Player_window.h \
           src/Playing_progress.h \
           src/keyedit.h \
           src/menustyle.h \
+          src/messagereceiver.h \
           src/settingsdialog.h \
           src/appsettings.h \
           src/tools.h
-SOURCES = src/main.cpp \
+SOURCES += src/main.cpp \
           src/Audio_player.cpp \
           src/Player_window.cpp \
           src/Playing_progress.cpp \
           src/keyedit.cpp \
           src/menustyle.cpp \
+          src/messagereceiver.cpp \
           src/settingsdialog.cpp \
           src/appsettings.cpp \
           src/tools.cpp
