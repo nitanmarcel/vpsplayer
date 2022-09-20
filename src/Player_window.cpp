@@ -659,7 +659,7 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     }
 }
 
-void PlayerWindow::resizeEvent(QResizeEvent *)
+void PlayerWindow::closeEvent(QCloseEvent *e)
 {
     settings->setGeometry(saveGeometry());
 }

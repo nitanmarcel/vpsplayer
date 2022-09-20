@@ -103,7 +103,7 @@ protected:
   void dropEvent(QDropEvent *e);
   void keyPressEvent(QKeyEvent *e);
   void keyReleaseEvent(QKeyEvent *e);
-  virtual void resizeEvent(QResizeEvent *);
+  virtual void closeEvent(QCloseEvent *e);
 
 signals:
   int playbackSpeedChanged(int speed);
