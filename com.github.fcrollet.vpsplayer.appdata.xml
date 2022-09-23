@@ -5,24 +5,36 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>VPS Player</name>
-  <summary>High quality Variable Pitch and Speed audio player</summary>
+  <summary>High quality Variable Pitch and Speed audio player. Fork of github.com/fcrollet/vpsplayer.</summary>
   <description>
     <p>VPS Player is an audio player that allows to independantly adjust pitch and speed on the fly.</p>
   </description>
   <launchable type="desktop-id">com.github.fcrollet.vpsplayer.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://github.com/fcrollet/vpsplayer/wiki/images/screenshot-01.png</image>
-    </screenshot>
-    <screenshot>
-      <image type="source">https://github.com/fcrollet/vpsplayer/wiki/images/screenshot-02.png</image>
+      <image type="source">https://github.com/nitanmarcel/vpsplayer/blob/qt5/assets/vpsplayer-fork.png</image>
     </screenshot>
   </screenshots>
-  <url type="homepage">https://github.com/fcrollet/vpsplayer</url>
-  <url type="bugtracker">https://github.com/fcrollet/vpsplayer/issues</url>
-  <developer_name>François CROLLET</developer_name>
-  <update_contact>fcrollet_AT_gmail.com</update_contact>
+  <url type="homepage">https://github.com/nitanmarcel/vpsplayer</url>
+  <url type="bugtracker">https://github.com/nitanmarcel/vpsplayer/issues</url>
+  <developer_name>Marcel Alexandru Nitan</developer_name>
+  <update_contact>nitan.marcel@protonmail.com</update_contact>
   <releases>
+        <release version="2.0.0" date="2022-09-23">
+      <description>
+	<p>Update 2.0.0:</p>
+	<ul>
+    <li>Backport from qt6 to qt5</li>
+    <li>Add support for drag and drop</li>
+    <li>UI improvemets</li>
+    <li>Implement settings menu</li>
+    <li>Add slider values customization</li>
+    <li>Implement shorcuts</li>
+    <li>Implement WaveformWidget (BETA)</li>
+	</ul>
+      </description>
+      <url>https://github.com/nitanmarcel/vpsplayer/releases/tag/v2.0.0</url>
+    </release>
     <release version="1.0.4" date="2021-03-21">
       <description>
 	<p>This release is a minor update:</p>
