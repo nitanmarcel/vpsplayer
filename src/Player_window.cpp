@@ -247,6 +247,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::readingPositionChanged, this, &PlayerWindow::updateReadingPosition);
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
+  
   if (settings->getShowWaveform())
   {
       connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
@@ -351,6 +352,8 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
   if (settings->getShowWaveform())
     widget_waveform->setSource(new QFileInfo(file_info.canonicalFilePath()));
   audio_player->decodeFile(file_info.canonicalFilePath());
+  emit pitchValueChanged(0);
+  emit playbackSpeedChanged(0);
 }
 
 
