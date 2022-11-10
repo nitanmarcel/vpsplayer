@@ -73,6 +73,7 @@ public:
   void updatePitch(int pitch); // Update pitch
   void updateSpeed(double speed_ratio); // Update speed
   void updateVolume(qreal volume); // Update output volume
+  QAudioFormat getFormat();
 
 private:
   void abortDecoding(QAudioDecoder::Error error); // Abort audio file decoding
@@ -89,6 +90,7 @@ signals:
   void loadingProgressChanged(int); // This signal is emitted to indicate the current loading progress. Parameter: progress between 0 and 100
   void readingPositionChanged(int); // This signal is emitted each time the reading position changes. Parameter: position in milliseconds (-1 if no valid audio file loaded)
   void statusChanged(AudioPlayer::Status); // This signal is emitted each time the status changes.
+  void bufferReady(QAudioBuffer); // Buffer to be sent to the waveform widget
 };
 
 #endif

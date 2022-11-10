@@ -2,7 +2,6 @@ include(thirdparty/SingleApplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 CONFIG += qt warn_on release link_pkgconfig c++14 exceptions_off
 QT += widgets multimedia
-LIBS += -lwaveformwidget
 PKGCONFIG += rubberband
 DEFINES += VERSION_STRING=\\\"2.0.0\\\"
 MOC_DIR = build_tmp
@@ -16,7 +15,8 @@ HEADERS += src/Audio_player.h \
           src/messagereceiver.h \
           src/settingsdialog.h \
           src/appsettings.h \
-          src/tools.h
+          src/tools.h \
+          src/waveformwidget.h
 SOURCES += src/main.cpp \
           src/Audio_player.cpp \
           src/Player_window.cpp \
@@ -26,7 +26,8 @@ SOURCES += src/main.cpp \
           src/messagereceiver.cpp \
           src/settingsdialog.cpp \
           src/appsettings.cpp \
-          src/tools.cpp
+          src/tools.cpp \
+          src/waveformwidget.cpp
 RESOURCES = icons.qrc styles.qrc
 TARGET = vpsplayer
 
