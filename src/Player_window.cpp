@@ -232,10 +232,10 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(spinbox_pitch, qOverload<int>(&QSpinBox::valueChanged), slider_pitch, &QAbstractSlider::setValue);
   connect(slider_pitch, &QAbstractSlider::valueChanged, this, &PlayerWindow::updatePitch);
   connect(slider_speed, &QAbstractSlider::valueChanged, this, &PlayerWindow::updateSpeed);
-//  if (settings->getShowWaveform())
-//    connect(widget_waveform, &WaveformWidget::barClicked, this, &PlayerWindow::moveReadingPosition);
-//  else
-    //connect(progress_playing, &PlayingProgress::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+  if (settings->getShowWaveform())
+    connect(widget_waveform, &WaveformWidget::barClicked, this, &PlayerWindow::moveReadingPosition);
+  else
+    connect(progress_playing, &PlayingProgress::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
   connect(this, &PlayerWindow::playbackSpeedChanged, slider_speed, &QAbstractSlider::setValue);
   connect(this, &PlayerWindow::pitchValueChanged, slider_pitch, &QAbstractSlider::setValue);
   connect(settings_dialog, &SettingsDialog::indexOptionUseR3EngineChanged, [this](int index){ audio_player->updateOptionUseR3Engine(index == 1); });//  });
@@ -249,11 +249,11 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
   connect(audio_player, &AudioPlayer::bufferReady, widget_waveform, &WaveformWidget::appendSamples);
   
-//  if (settings->getShowWaveform())
-//  {
-//      connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
-//      connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), audio_player, &AudioPlayer::moveReadingPosition);
-//  }
+  if (settings->getShowWaveform())
+  {
+      connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
+      connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), audio_player, &AudioPlayer::moveReadingPosition);
+  }
 
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchModifierValueChanged), [this](int value){ pitchModifierValue = value; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::speedModifierValueChanged), [this](int value){ speedModifierValue = value; });
@@ -350,10 +350,9 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
 {
   setWindowTitle(QStringLiteral("VPS Player [%1]").arg(file_info.fileName()));
   music_directory = file_info.canonicalPath();
-  if (settings->getShowWaveform())
-    //widget_waveform->setSource(new QFileInfo(file_info.canonicalFilePath()));
   audio_player->decodeFile(file_info.canonicalFilePath());
   widget_waveform->clearSamples();
+  widget_waveform->resetBreakPoint();
   emit pitchValueChanged(0);
   emit playbackSpeedChanged(0);
 }
@@ -385,12 +384,12 @@ void PlayerWindow::playAudio()
 
 void PlayerWindow::playAudioFromBreakpoint()
 {
-//    if (audio_player->getStatus() != AudioPlayer::Stopped && widget_waveform->getBreakPoint() != 0)
-//    {
-//        int breakpointPos = widget_waveform->getBreakPoint();
-//        audio_player->moveReadingPosition(qMax(0, breakpointPos));
-//        playAudio();
-//    }
+    if (audio_player->getStatus() != AudioPlayer::Stopped && widget_waveform->getBreakPoint() != 0)
+    {
+        int breakpointPos = widget_waveform->getBreakPoint();
+        audio_player->moveReadingPosition(qMax(0, breakpointPos));
+        playAudio();
+    }
 }
 
 // Pause audio playing
@@ -403,7 +402,7 @@ void PlayerWindow::pauseAudio()
 void PlayerWindow::stopAudio()
 {
     audio_player->stopPlaying();
-    //widget_waveform->resetBreakPoint();
+    widget_waveform->resetBreakPoint();
 }
 
 // Moves reading position backward or forward (waveform). Parameter: position change in milliseconds
@@ -542,14 +541,10 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     button_fwd10->setEnabled(playback_begun);
     button_play->setEnabled(enable_play);
     button_pause->setEnabled(enable_pause);
-//    if (settings->getShowWaveform())
-//        widget_waveform->setClickable(playback_begun);
-//    else
-//        progress_playing->setClickable(playback_begun);
-    if (audio_player->getStatus() == AudioPlayer::Loading)
-        widget_waveform->setFormat(audio_player->getFormat());
-    if (audio_player->getStatus() == AudioPlayer::Playing)
-        widget_waveform->setReady(true);
+    if (settings->getShowWaveform())
+        widget_waveform->setClickable(playback_begun);
+    else
+        progress_playing->setClickable(playback_begun);
   };
 
   switch(status) {
@@ -615,17 +610,17 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     }
     else if (e->key() == pauseKeyAlt && !key_modifier)
     {
-//        if (widget_waveform->getBreakPoint() > 0)
-//        {
-//            if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
-//            {
-//                pauseAudio();
-//            }
-//            else if (audio_player->getStatus() != AudioPlayer::Stopped)
-//            {
-//                playAudioFromBreakpoint();
-//            }
-//        }
+        if (widget_waveform->getBreakPoint() > 0)
+        {
+            if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
+            {
+                pauseAudio();
+            }
+            else if (audio_player->getStatus() != AudioPlayer::Stopped)
+            {
+                playAudioFromBreakpoint();
+            }
+        }
     }
     else if ((e->key() == pauseKey || e->key() == pauseKeyAlt) && key_modifier)
     {

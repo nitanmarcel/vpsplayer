@@ -2,7 +2,8 @@
 
 WaveformWidget::WaveformWidget()
 {
-    waveformReady = false;
+    m_isClickable = false;
+
     m_pixLabel = new QLabel(this);
     m_pixLabel->show();
     this->m_paintTimer = new QTimer(this);
@@ -16,14 +17,64 @@ WaveformWidget::~WaveformWidget()
 
 }
 
-void WaveformWidget::setFormat(QAudioFormat format)
+void WaveformWidget::setClickable(bool clickable)
 {
-    audioFormat = format;
+  if (clickable)
+    setCursor(Qt::PointingHandCursor);
+  else {
+    setCursor(Qt::ForbiddenCursor);
+    if (underMouse())
+      QToolTip::hideText();
+  }
+
+  setMouseTracking(clickable);
+
+  m_isClickable = clickable;
 }
 
-void WaveformWidget::setReady(bool ready)
+void WaveformWidget::mousePressEvent(QMouseEvent *event)
 {
-    waveformReady = ready;
+  if ((event->button() == Qt::RightButton) && m_isClickable)
+      if ((event->x() > this->m_breakPointPos + 3) || (event->x() < this->m_breakPointPos - 3))
+      {
+          m_breakPointPos = event->x();
+          this->m_hasBreakPoint = true;
+          emit breakPointSet(QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()));
+          this->m_updateBreakPointRequired = true;
+      }
+      else
+       {
+          this->m_hasBreakPoint = false;
+          this->m_breakPointPos = 0;
+          emit breakPointRemoved();
+          this->m_updateBreakPointRequired = true;
+      }
+  else if ((event->button() == Qt::LeftButton) && m_isClickable)
+      emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) : 0);
+
+  event->accept();
+}
+
+void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
+{
+  event->accept();
+}
+
+void WaveformWidget::resetBreakPoint()
+{
+    m_updateBreakPointRequired = true;
+    m_hasBreakPoint = false;
+}
+
+void WaveformWidget::setBreakPoint(int pos)
+{
+    m_breakPointPos = pos / (maximum() / width());
+    m_updateBreakPointRequired = true;
+}
+
+int WaveformWidget::getBreakPoint()
+{
+    return m_breakPointPos * (maximum() / width());
 }
 
 void WaveformWidget::appendSamples(QAudioBuffer buffer)
@@ -41,13 +92,13 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
 
     for (int i = 0; i < count; i += sampleIncrement){
         double val = data[i].left/peakValue;
-        samples.append(val);
+        m_samples.append(val);
     }
 }
 
 void WaveformWidget::clearSamples()
 {
-    samples.clear();
+    m_samples.clear();
 }
 
 qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
@@ -94,23 +145,34 @@ qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
 
 void WaveformWidget::drawWave()
     {
-        if (!waveformReady)
-            return;
-        int numberOfSamples = samples.size();
-        int count = numberOfSamples;
-        float xScale = (float)width() / count;
+        int numberOfSamples = m_samples.size();
+        float xScale = (float)width() / (numberOfSamples / 2);
         float center = (float)height() / 2;
         m_pixMap = QPixmap(size());
         m_pixMap.scaled(size());
-        m_pixMap.fill(Qt::black);
+        m_pixMap.fill(m_waveformBackgroundColor);
         QPainter painter(&m_pixMap);
-        painter.setPen(Qt::red);
-        int currIndex = m_pixMap.rect().x();
-        for(int i = 0; i < numberOfSamples; ++i){
-            painter.drawRect(i * xScale, center - (samples[i] * center), 2, (samples[i] * center) * 2);
-            currIndex++;
+        painter.setPen(QPen(m_waveformColor, 1, Qt::SolidLine, Qt::RoundCap));
+        m_drawingIndex = this->m_pixMap.rect().x();
+
+        for(int i = 0; i < numberOfSamples / 2; ++i){
+            painter.drawRect(i * xScale, center - (m_samples[i] * center), 2, (m_samples[i] * center) * 2);
+            m_drawingIndex+= i;
         }
 
+        if (this->m_breakPointPos > 0 && this->m_hasBreakPoint)
+        {
+            painter.setPen(QPen(Qt::darkGray, 2, Qt::SolidLine, Qt::RoundCap));
+            painter.drawLine(m_breakPointPos, 0, m_breakPointPos, 1000);
+        }
+
+        if (value() > 0)
+        {
+            painter.setPen(QPen(m_progressColor, 2, Qt::SolidLine, Qt::RoundCap));
+            // event->x() * (maximum() / width())
+            painter.drawLine(QStyle::sliderPositionFromValue(minimum(), maximum(), value(), width()), 0, QStyle::sliderPositionFromValue(minimum(), maximum(), value(), width()), 1000);
+            //painter.drawLine((qreal)value() * (maximum() / width()), 0, (qreal)value() * (maximum() / width()), 1000);
+        }
         m_pixMap.scaled(width(), height());
         m_pixLabel->setPixmap(m_pixMap);
         m_pixLabel->resize(width(), height());
