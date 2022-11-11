@@ -31,7 +31,7 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
     QAudioBuffer::S32F *data = buffer.data<QAudioBuffer::S32F>();
     qreal peakValue = qreal(1.00003); // sample type is always float
     int count = buffer.sampleCount() / 2;
-    for (int i = 0; i < count; i += 1102){
+    for (int i = 0; i < count; i += 1050){
         double val = data[i].left/peakValue;
         samples.append(val);
     }
