@@ -29,9 +29,17 @@ void WaveformWidget::setReady(bool ready)
 void WaveformWidget::appendSamples(QAudioBuffer buffer)
 {
     QAudioBuffer::S32F *data = buffer.data<QAudioBuffer::S32F>();
-    qreal peakValue = qreal(1.00003); // sample type is always float
+    qreal peakValue = getPeakValue(buffer.format()); // sample type is always float
     int count = buffer.sampleCount() / 2;
-    for (int i = 0; i < count; i += 1050){
+    int sampleIncrement = 2;
+    if (buffer.format().sampleRate() == 48000)
+        sampleIncrement = 1200; // 40 samples/second
+    if (buffer.format().sampleRate() == 44100)
+        sampleIncrement = 1050; // 42 samples/second
+    if (buffer.format().sampleRate() == 22050)
+        sampleIncrement = 525; // 42 samples/second
+
+    for (int i = 0; i < count; i += sampleIncrement){
         double val = data[i].left/peakValue;
         samples.append(val);
     }
@@ -42,12 +50,54 @@ void WaveformWidget::clearSamples()
     samples.clear();
 }
 
+qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
+{
+    // Note: Only the most common sample formats are supported
+    if (!format.isValid())
+        return qreal(0);
+
+    if (format.codec() != "audio/pcm")
+        return qreal(0);
+
+    switch (format.sampleType()) {
+    case QAudioFormat::Unknown:
+        break;
+    case QAudioFormat::Float:
+        if (format.sampleSize() != 32) // other sample formats are not supported
+            return qreal(0);
+        return qreal(1.00003);
+    case QAudioFormat::SignedInt:
+        if (format.sampleSize() == 32)
+#ifdef Q_OS_WIN
+            return qreal(INT_MAX);
+#endif
+#ifdef Q_OS_UNIX
+            return qreal(SHRT_MAX);
+#endif
+        if (format.sampleSize() == 16)
+            return qreal(SHRT_MAX);
+        if (format.sampleSize() == 8)
+            return qreal(CHAR_MAX);
+        break;
+    case QAudioFormat::UnSignedInt:
+        if (format.sampleSize() == 32)
+            return qreal(UINT_MAX);
+        if (format.sampleSize() == 16)
+            return qreal(USHRT_MAX);
+        if (format.sampleSize() == 8)
+            return qreal(UCHAR_MAX);
+        break;
+    }
+
+    return qreal(0);
+}
+
 void WaveformWidget::drawWave()
     {
         if (!waveformReady)
             return;
         int numberOfSamples = samples.size();
-        int count = numberOfSamples / 2;
+        int count = numberOfSamples;
         float xScale = (float)width() / count;
         float center = (float)height() / 2;
         m_pixMap = QPixmap(size());
