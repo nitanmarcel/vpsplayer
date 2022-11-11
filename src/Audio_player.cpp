@@ -393,6 +393,13 @@ void AudioPlayer::manageAudioOutputState(QAudio::State state)
 // Read buffer from the decoder
 void AudioPlayer::readDecoderBuffer()
 {
-  decoded_samples->append(audio_decoder->read());
+  QAudioBuffer buffer = audio_decoder->read();
+  decoded_samples->append(buffer);
   emit loadingProgressChanged(static_cast<int>((100 * audio_decoder->position()) / audio_decoder->duration()));
+  emit bufferReady(buffer);
+}
+
+QAudioFormat AudioPlayer::getFormat()
+{
+    return target_format;
 }

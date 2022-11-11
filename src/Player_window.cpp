@@ -27,7 +27,7 @@
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QDragEnterEvent>
-#include <WaveformWidget.h>
+#include "waveformwidget.h"
 
 #include "Player_window.h"
 #include "settingsdialog.h"
@@ -247,6 +247,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::readingPositionChanged, this, &PlayerWindow::updateReadingPosition);
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
+  connect(audio_player, &AudioPlayer::bufferReady, widget_waveform, &WaveformWidget::appendSamples);
   
   if (settings->getShowWaveform())
   {
@@ -349,9 +350,9 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
 {
   setWindowTitle(QStringLiteral("VPS Player [%1]").arg(file_info.fileName()));
   music_directory = file_info.canonicalPath();
-  if (settings->getShowWaveform())
-    widget_waveform->setSource(new QFileInfo(file_info.canonicalFilePath()));
   audio_player->decodeFile(file_info.canonicalFilePath());
+  widget_waveform->clearSamples();
+  widget_waveform->resetBreakPoint();
   emit pitchValueChanged(0);
   emit playbackSpeedChanged(0);
 }
