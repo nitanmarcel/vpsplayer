@@ -28,11 +28,11 @@ void WaveformWidget::setReady(bool ready)
 
 void WaveformWidget::appendSamples(QAudioBuffer buffer)
 {
-    qreal peak = getPeakValue(buffer.format());
-    const qint16 *data = buffer.constData<qint16>();
+    QAudioBuffer::S32F *data = buffer.data<QAudioBuffer::S32F>();
+    qreal peakValue = qreal(1.00003); // sample type is always float
     int count = buffer.sampleCount() / 2;
-    for (int i = 0; i < count; i += 1200){ // This works fine for 48000Hz but not for 441000 and
-        double val = data[i]/peak;
+    for (int i = 0; i < count; i += 1102){
+        double val = data[i].left/peakValue;
         samples.append(val);
     }
 }
@@ -40,48 +40,6 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
 void WaveformWidget::clearSamples()
 {
     samples.clear();
-}
-
-qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
-{
-    // Note: Only the most common sample formats are supported
-    if (!format.isValid())
-        return qreal(0);
-
-    if (format.codec() != "audio/pcm")
-        return qreal(0);
-
-    switch (format.sampleType()) {
-    case QAudioFormat::Unknown:
-        break;
-    case QAudioFormat::Float:
-        if (format.sampleSize() != 32) // other sample formats are not supported
-            return qreal(0);
-        return qreal(1.00003);
-    case QAudioFormat::SignedInt:
-        if (format.sampleSize() == 32)
-#ifdef Q_OS_WIN
-            return qreal(INT_MAX);
-#endif
-#ifdef Q_OS_UNIX
-            return qreal(SHRT_MAX);
-#endif
-        if (format.sampleSize() == 16)
-            return qreal(SHRT_MAX);
-        if (format.sampleSize() == 8)
-            return qreal(CHAR_MAX);
-        break;
-    case QAudioFormat::UnSignedInt:
-        if (format.sampleSize() == 32)
-            return qreal(UINT_MAX);
-        if (format.sampleSize() == 16)
-            return qreal(USHRT_MAX);
-        if (format.sampleSize() == 8)
-            return qreal(UCHAR_MAX);
-        break;
-    }
-
-    return qreal(0);
 }
 
 void WaveformWidget::drawWave()
