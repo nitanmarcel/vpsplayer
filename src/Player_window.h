@@ -19,7 +19,7 @@
 #include <QString>
 #include <QKeyEvent>
 
-#include <WaveformWidget.h>
+#include "waveformwidget.h"
 
 #include "Audio_player.h"
 #include "Playing_progress.h"

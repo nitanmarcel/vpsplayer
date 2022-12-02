@@ -82,6 +82,7 @@ void AudioPlayer::decodeFile(const QString &filename)
   connect(audio_decoder, qOverload<QAudioDecoder::Error>(&QAudioDecoder::error), this, &AudioPlayer::abortDecoding);
     
   audio_decoder->start();
+  emit decodingStarted();
 }
 
 
@@ -365,6 +366,7 @@ void AudioPlayer::finishDecoding()
   status = AudioPlayer::Stopped;
   emit readingPositionChanged(0);
   startPlaying();
+  emit decodingFinished();
 }
 
 

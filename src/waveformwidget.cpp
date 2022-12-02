@@ -143,22 +143,40 @@ qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
     return qreal(0);
 }
 
+void WaveformWidget::resetWaveImage()
+{
+    m_waveImage = QImage(size(), QImage::Format_RGBA64);
+}
+
+void WaveformWidget::drawWaveImage()
+{
+    m_isImageDrawn = false;
+    int numberOfSamples = m_samples.size();
+    float xScale = (float)width() / (numberOfSamples);
+    float center = (float)height() / 2;
+    m_waveImage = QImage(size(), QImage::Format_RGB16);
+    m_waveImage.fill(m_waveformBackgroundColor);
+    QPainter painter(&m_waveImage);
+    painter.setPen(QPen(m_waveformColor, 1, Qt::SolidLine, Qt::RoundCap));
+    m_drawingIndex = this->m_pixMap.rect().x();
+
+    for(int i = 0; i < numberOfSamples; ++i){
+        painter.drawRect(i * xScale, center - (m_samples[i] * center), 2, (m_samples[i] * center) * 2);
+        m_drawingIndex+= i;
+    }
+    m_finishedWaveImage = m_waveImage;
+    m_isImageDrawn = true;
+}
+
 void WaveformWidget::drawWave()
     {
-        int numberOfSamples = m_samples.size();
-        float xScale = (float)width() / (numberOfSamples / 2);
-        float center = (float)height() / 2;
+        QThreadPool pool;
+        QFuture<void> future = QtConcurrent::run(this, &WaveformWidget::drawWaveImage);
         m_pixMap = QPixmap(size());
-        m_pixMap.scaled(size());
         m_pixMap.fill(m_waveformBackgroundColor);
+        m_pixMap.convertFromImage(m_finishedWaveImage);
+        m_pixMap.scaled(size());
         QPainter painter(&m_pixMap);
-        painter.setPen(QPen(m_waveformColor, 1, Qt::SolidLine, Qt::RoundCap));
-        m_drawingIndex = this->m_pixMap.rect().x();
-
-        for(int i = 0; i < numberOfSamples / 2; ++i){
-            painter.drawRect(i * xScale, center - (m_samples[i] * center), 2, (m_samples[i] * center) * 2);
-            m_drawingIndex+= i;
-        }
 
         if (this->m_breakPointPos > 0 && this->m_hasBreakPoint)
         {

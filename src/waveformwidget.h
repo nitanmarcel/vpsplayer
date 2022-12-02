@@ -4,6 +4,7 @@
 #include <QAbstractSlider>
 #include <QPainter>
 #include <QPixmap>
+#include <QImage>
 #include <QLabel>
 #include <QTimer>
 #include <QObject>
@@ -15,6 +16,7 @@
 #include <QToolTip>
 #include <QMouseEvent>
 #include "QStyle"
+#include <QtConcurrent>
 
 class WaveformWidget : public QAbstractSlider
 {
@@ -33,18 +35,23 @@ public:
     void resetBreakPoint();
     void setBreakPoint(int pos);
     int getBreakPoint();
+    void resetWaveImage();
 private:
     QPixmap m_pixMap;
+    QImage m_waveImage;
+    QImage m_finishedWaveImage;
     QLabel *m_pixLabel;
     QTimer *m_paintTimer ;
     QVector<double> m_samples;
 
     bool m_isClickable;
+    bool m_isImageDrawn;
     int m_drawingIndex;
     bool m_updateBreakPointRequired;
     bool m_hasBreakPoint;
     int m_breakPointPos;
 
+    void drawWaveImage();
     void drawWave();
     qreal getPeakValue(const QAudioFormat& format);
 
