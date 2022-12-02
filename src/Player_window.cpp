@@ -211,7 +211,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   updateDuration(-1);
   
   adjustSize();
-  setMaximumHeight(height());
   
   setAcceptDrops(true);
 
