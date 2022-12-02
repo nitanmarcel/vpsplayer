@@ -54,7 +54,7 @@ void WaveformThread::run()
     int numberOfSamples = m_samplesL.size();
     float xScale = (float)m_width / (numberOfSamples);
     float center = (float)m_heihgt / 2;
-    QImage waveImage = QImage(m_width, m_heihgt, QImage::Format_RGB16);
+    QImage waveImage = QImage(m_width, m_heihgt, QImage::Format_RGBA64);
     waveImage.fill(m_background_color);
     QPainter painter(&waveImage);
     painter.setPen(QPen(m_wave_color, 1, Qt::SolidLine, Qt::RoundCap));

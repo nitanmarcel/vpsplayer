@@ -186,7 +186,7 @@ void WaveformWidget::drawWave()
 
         if (m_samplesL.empty())
         {
-            m_waveImage = QImage(size(), QImage::Format_RGB16);
+            m_waveImage = QImage(size(), QImage::Format_RGBA64);
             m_waveImage.fill(m_waveformBackgroundColor);
         }
 
