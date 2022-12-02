@@ -41,8 +41,10 @@ private:
     QPixmap m_pixMap;
     QImage m_waveImage;
     QLabel *m_pixLabel;
-    QTimer *m_paintTimer ;
-    QVector<double> m_samples;
+    QTimer *m_paintTimer;
+    QVector<double> m_samplesR;
+    QVector<double> m_samplesL;
+    int m_channelCount = 1;
 
     WaveformThread *thread;
 

@@ -89,7 +89,8 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
 {
     QAudioBuffer::S32F *data = buffer.data<QAudioBuffer::S32F>();
     qreal peakValue = getPeakValue(buffer.format()); // sample type is always float
-    int count = buffer.sampleCount() / 2;
+    thread->setChannelCount(buffer.format().channelCount());
+    m_channelCount = buffer.format().channelCount();
     int sampleIncrement = 2;
     if (buffer.format().sampleRate() == 48000)
         sampleIncrement = 1200; // 40 samples/second
@@ -99,22 +100,35 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
         sampleIncrement = 525; // 42 samples/second
 
     for (int i = 0; i < buffer.frameCount(); i++){
-        double val = data[i].left/peakValue;
-        m_samples.append(val);
+        if (buffer.format().channelCount() == 1)
+        {
+            double val = data[i].left/peakValue;
+            m_samplesL.append(val);
+        }
+        else {
+            double valL = data[i].left/peakValue;
+            double valR = data[i].right/peakValue;
+            m_samplesL.append(valL);
+            m_samplesR.append(valR);
+        }
     }
 }
 
 void WaveformWidget::clearSamples()
 {
     m_areSamplesReady = false;
-    m_samples.clear();
+    m_samplesL.clear();
+    m_samplesR.clear();
     thread->deleteSamples();
 }
 
 void WaveformWidget::setSamplesReady()
 {
     m_areSamplesReady = true;
-    thread->storeSamples(m_samples);
+    if (m_channelCount == 1)
+        thread->storeSamples(m_samplesL);
+    else
+        thread->storeSamples(m_samplesR, m_samplesL);
 }
 
 qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
@@ -170,7 +184,7 @@ void WaveformWidget::drawWave()
         m_pixMap = QPixmap(size());
         m_pixMap.fill(m_waveformBackgroundColor);
 
-        if (m_samples.empty())
+        if (m_samplesL.empty())
         {
             m_waveImage = QImage(size(), QImage::Format_RGB16);
             m_waveImage.fill(m_waveformBackgroundColor);

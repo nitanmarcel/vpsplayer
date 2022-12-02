@@ -15,6 +15,8 @@ public:
     WaveformThread();
     ~WaveformThread();
     void storeSamples(const QVector<double> &samples);
+    void storeSamples(const QVector<double> &samplesR, const QVector<double> &samplesL);
+    void setChannelCount(int channels);
     void deleteSamples();
     void processSamples(qreal window_wdith, qreal window_height, QColor wave_color, QColor background_color);
     void stopProcess();
@@ -23,6 +25,9 @@ private:
     bool m_abort;
 
     QVector<double> m_samples;
+    QVector<double> m_samplesR;
+    QVector<double> m_samplesL;
+    int m_channelCount = 1;
     qreal m_width;
     qreal m_heihgt;
     QColor m_wave_color;
