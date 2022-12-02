@@ -1,14 +1,22 @@
 #include "waveformwidget.h"
+#include "math.h"
 
 WaveformWidget::WaveformWidget()
 {
-    m_isClickable = false;
 
+    m_isClickable = false;
+    m_areSamplesReady = false;
     m_pixLabel = new QLabel(this);
     m_pixLabel->show();
+
+    thread = new WaveformThread();
+    connect(thread, &WaveformThread::waveformReady, this, &WaveformWidget::setWaveImage);
+
+
     this->m_paintTimer = new QTimer(this);
-    connect(this->m_paintTimer, &QTimer::timeout, this, &WaveformWidget::drawWave);
     m_paintTimer->setInterval(100);
+    connect(this->m_paintTimer, &QTimer::timeout, this, &WaveformWidget::drawWave);
+
     m_paintTimer->start();
 }
 
@@ -90,7 +98,7 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
     if (buffer.format().sampleRate() == 22050)
         sampleIncrement = 525; // 42 samples/second
 
-    for (int i = 0; i < count; i += sampleIncrement){
+    for (int i = 0; i < buffer.frameCount(); i++){
         double val = data[i].left/peakValue;
         m_samples.append(val);
     }
@@ -98,7 +106,15 @@ void WaveformWidget::appendSamples(QAudioBuffer buffer)
 
 void WaveformWidget::clearSamples()
 {
+    m_areSamplesReady = false;
     m_samples.clear();
+    thread->deleteSamples();
+}
+
+void WaveformWidget::setSamplesReady()
+{
+    m_areSamplesReady = true;
+    thread->storeSamples(m_samples);
 }
 
 qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
@@ -143,39 +159,30 @@ qreal WaveformWidget::getPeakValue(const QAudioFormat& format)
     return qreal(0);
 }
 
-void WaveformWidget::resetWaveImage()
+void WaveformWidget::setWaveImage(QImage waveform)
 {
-    m_waveImage = QImage(size(), QImage::Format_RGBA64);
+    m_waveImage = waveform;
 }
 
-void WaveformWidget::drawWaveImage()
-{
-    m_isImageDrawn = false;
-    int numberOfSamples = m_samples.size();
-    float xScale = (float)width() / (numberOfSamples);
-    float center = (float)height() / 2;
-    m_waveImage = QImage(size(), QImage::Format_RGB16);
-    m_waveImage.fill(m_waveformBackgroundColor);
-    QPainter painter(&m_waveImage);
-    painter.setPen(QPen(m_waveformColor, 1, Qt::SolidLine, Qt::RoundCap));
-    m_drawingIndex = this->m_pixMap.rect().x();
-
-    for(int i = 0; i < numberOfSamples; ++i){
-        painter.drawRect(i * xScale, center - (m_samples[i] * center), 2, (m_samples[i] * center) * 2);
-        m_drawingIndex+= i;
-    }
-    m_finishedWaveImage = m_waveImage;
-    m_isImageDrawn = true;
-}
 
 void WaveformWidget::drawWave()
     {
-        QThreadPool pool;
-        QFuture<void> future = QtConcurrent::run(this, &WaveformWidget::drawWaveImage);
         m_pixMap = QPixmap(size());
         m_pixMap.fill(m_waveformBackgroundColor);
-        m_pixMap.convertFromImage(m_finishedWaveImage);
-        m_pixMap.scaled(size());
+
+        if (m_samples.empty())
+        {
+            m_waveImage = QImage(size(), QImage::Format_RGB16);
+            m_waveImage.fill(m_waveformBackgroundColor);
+        }
+
+        m_pixMap.convertFromImage(m_waveImage);
+        if (m_areSamplesReady)
+        {
+            thread->processSamples(width(), height(), m_waveformColor, m_waveformBackgroundColor);
+        }
+
+
         QPainter painter(&m_pixMap);
 
         if (this->m_breakPointPos > 0 && this->m_hasBreakPoint)
@@ -187,10 +194,9 @@ void WaveformWidget::drawWave()
         if (value() > 0)
         {
             painter.setPen(QPen(m_progressColor, 2, Qt::SolidLine, Qt::RoundCap));
-            // event->x() * (maximum() / width())
             painter.drawLine(QStyle::sliderPositionFromValue(minimum(), maximum(), value(), width()), 0, QStyle::sliderPositionFromValue(minimum(), maximum(), value(), width()), 1000);
-            //painter.drawLine((qreal)value() * (maximum() / width()), 0, (qreal)value() * (maximum() / width()), 1000);
         }
+
         m_pixMap.scaled(width(), height());
         m_pixLabel->setPixmap(m_pixMap);
         m_pixLabel->resize(width(), height());

@@ -16,6 +16,7 @@ HEADERS += src/Audio_player.h \
           src/settingsdialog.h \
           src/appsettings.h \
           src/tools.h \
+          src/waveformthread.h \
           src/waveformwidget.h
 SOURCES += src/main.cpp \
           src/Audio_player.cpp \
@@ -27,6 +28,7 @@ SOURCES += src/main.cpp \
           src/settingsdialog.cpp \
           src/appsettings.cpp \
           src/tools.cpp \
+          src/waveformthread.cpp \
           src/waveformwidget.cpp
 RESOURCES = icons.qrc styles.qrc
 TARGET = vpsplayer

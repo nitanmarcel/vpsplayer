@@ -17,6 +17,7 @@
 #include <QMouseEvent>
 #include "QStyle"
 #include <QtConcurrent>
+#include "waveformthread.h"
 
 class WaveformWidget : public QAbstractSlider
 {
@@ -35,23 +36,24 @@ public:
     void resetBreakPoint();
     void setBreakPoint(int pos);
     int getBreakPoint();
-    void resetWaveImage();
+    void setSamplesReady();
 private:
     QPixmap m_pixMap;
     QImage m_waveImage;
-    QImage m_finishedWaveImage;
     QLabel *m_pixLabel;
     QTimer *m_paintTimer ;
     QVector<double> m_samples;
 
+    WaveformThread *thread;
+
     bool m_isClickable;
-    bool m_isImageDrawn;
+    bool m_areSamplesReady;
     int m_drawingIndex;
     bool m_updateBreakPointRequired;
     bool m_hasBreakPoint;
     int m_breakPointPos;
 
-    void drawWaveImage();
+    void setWaveImage(QImage waveform);
     void drawWave();
     qreal getPeakValue(const QAudioFormat& format);
 
@@ -61,7 +63,7 @@ private:
     QColor m_waveformBackgroundColor { Qt::transparent };
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event) override;
 signals:
     void barClicked(int);
     void breakPointRemoved();

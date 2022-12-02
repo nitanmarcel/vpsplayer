@@ -247,8 +247,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::readingPositionChanged, this, &PlayerWindow::updateReadingPosition);
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
-  connect(audio_player, &AudioPlayer::decodingStarted, widget_waveform, &WaveformWidget::resetWaveImage);
   connect(audio_player, &AudioPlayer::bufferReady, widget_waveform, &WaveformWidget::appendSamples);
+  connect(audio_player, &AudioPlayer::decodingFinished, widget_waveform, &WaveformWidget::setSamplesReady);
   
   if (settings->getShowWaveform())
   {
