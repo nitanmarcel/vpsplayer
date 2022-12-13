@@ -21,7 +21,7 @@ public:
     void reset();
 private:
 
-    float rsqrt(float n);
+    float qsqrt(float n);
 
     std::vector<double> samples_left;
     std::vector<double> samples_right;
@@ -33,7 +33,7 @@ private:
     long window_height = 0;
 
     QMutex mutex;
-    bool abort;
+    bool abort = false;
     bool recalculate = false;
 protected:
     void run();

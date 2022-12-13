@@ -33,6 +33,9 @@ SOURCES += src/main.cpp \
 RESOURCES = icons.qrc styles.qrc
 TARGET = vpsplayer
 
+
+QMAKE_CXXFLAGS_RELEASE += -O2 -ftree-vectorize
+
 isEmpty(PREFIX) {
   PREFIX = /usr
 }

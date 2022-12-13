@@ -71,6 +71,7 @@ void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
 void WaveformWidget::resizeEvent(QResizeEvent *e)
 {
     QAbstractSlider::resizeEvent(e);
+    auto i = builder->wait();
     builder->setProprieties(-1, -1, -1, width(), height());
 }
 
@@ -158,7 +159,7 @@ void WaveformWidget::paint()
 
     // FIXME
 
-    painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
+    painter.setPen(QPen(waveform_color, 2, Qt::SolidLine, Qt::FlatCap));
 
     if (channels == 1)
     {
@@ -206,7 +207,8 @@ void WaveformWidget::paint()
               painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
 
               // FIXME
-              painter.drawLine(counter - 1, center, counter, center);
+              painter.setPen(QPen(waveform_progress_color.lighter(), 2, Qt::SolidLine, Qt::FlatCap));
+              painter.drawLine(counter - 1, center - (center / 2), counter, center - (center / 2));
               //
 
               painter.drawLines(pointsAVRGL, 3);
@@ -242,12 +244,12 @@ void WaveformWidget::paint()
                 {
                     // Draw avearge Point
                     painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
+                    painter.drawLines(pointsAVRGL, 2);
 
                     // FIXME
+                    painter.setPen(QPen(waveform_progress_color.lighter(), 2, Qt::SolidLine, Qt::FlatCap));
                     painter.drawLine(counter - 1, center - (center / 2), counter, center - (center / 2));
                     //
-
-                    painter.drawLines(pointsAVRGL, 2);
 
                     // Draw RMS
                     painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
@@ -276,9 +278,15 @@ void WaveformWidget::paint()
 
                 if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
                 {
+
                     // Draw avearge Point
                     painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
                     painter.drawLines(pointsAVRGR, 2);
+
+                    // FIXME
+                    painter.setPen(QPen(waveform_progress_color.lighter(), 2, Qt::SolidLine, Qt::FlatCap));
+                    painter.drawLine(counter - 1, center + (center / 2), counter, center + (center / 2));
+                    //
 
                     // Draw RMS
                     painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
@@ -314,4 +322,6 @@ void WaveformWidget::paint()
     m_pixMap.scaled(width(), height());
     m_pixLabel->setPixmap(m_pixMap);
     m_pixLabel->resize(width(), height());
+
+    update_breakpoint = false;
 }

@@ -67,7 +67,6 @@ void WaveformBuilder::reset()
 
 void WaveformBuilder::run()
 {
-    mutex.lock();
     QVector<float> rms_left;
     QVector<float> rms_right;
 
@@ -115,8 +114,8 @@ void WaveformBuilder::run()
         float mean_left = squared_sum_left / samples_per_pixel;
         float mean_right = squared_sum_right / samples_per_pixel;
 
-        float rms_point_left = std::sqrt(mean_left);
-        float rms_point_right = std::sqrt(mean_right);
+        float rms_point_left = qsqrt(mean_left);
+        float rms_point_right = qsqrt(mean_right);
 
         rms_left.push_back(rms_point_left);
         rms_right.push_back(rms_point_right);
@@ -130,22 +129,19 @@ void WaveformBuilder::run()
         nr+= samples_per_pixel;
     }
     emit dataReady(rms_left, rms_right, average_left, average_right, channel_count);
-    mutex.unlock();
 }
 
-float WaveformBuilder::rsqrt(float n)
+float WaveformBuilder::qsqrt(float n)
 {
-    // https://en.wikipedia.org/wiki/Fast_inverse_square_root
-    long i;
-    float x2, y;
-    const float threehalfs = 1.5f;
+    // QUAKE 3
+    const float xhalf = 0.5f*n;
 
-    x2 = n * 0.5F;
-    y  = n;
-    i  = * ( long * ) &y;
-    i  = 0x5f3759df - ( i >> 1 );
-    y  = * ( float * ) &i;
-    y  = y * ( threehalfs - ( x2 * y * y ) );
-
-    return y;
+    union // get bits for floating value
+    {
+      float n;
+      int i;
+    } u;
+    u.n = n;
+    u.i = 0x5f3759df - (u.i >> 1);  // gives initial guess y0
+    return n*u.n*(1.5f - xhalf*u.n*u.n);// Newton step, repeating increases accuracy
 }
