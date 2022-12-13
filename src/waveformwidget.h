@@ -17,55 +17,77 @@
 #include <QMouseEvent>
 #include "QStyle"
 #include <QtConcurrent>
-#include "waveformthread.h"
+#include <QMetaType>
+#include <QResizeEvent>
+
+#include "waveformbuilder.h"
+#include <algorithm>
 
 class WaveformWidget : public QAbstractSlider
 {
-    Q_PROPERTY( QColor waveformColor MEMBER m_waveformColor );
-    Q_PROPERTY( QColor waveformProgressColor MEMBER m_progressColor );
-    Q_PROPERTY( QColor waveformBackgroundColor MEMBER m_waveformBackgroundColor );
+    Q_PROPERTY( QColor waveformColor MEMBER waveform_color );
+    Q_PROPERTY( QColor waveformProgressColor MEMBER waveform_progress_color );
+    Q_PROPERTY( QColor waveformBackgroundColor MEMBER waveform_background_color );
 
     Q_OBJECT
 public:
     WaveformWidget();
     ~WaveformWidget();
-    void setFormat(QAudioFormat format);
-    void appendSamples(QAudioBuffer buffer);
-    void clearSamples();
+
+    void onBufferReady(QAudioBuffer buffer);
+    void onDecodingFinished(int channel_count, long sample_rate, long duration);
+    void setProprieties(int _channel_count, long _sample_rate, long _duration);
+
     void setClickable(bool clickable);
     void resetBreakPoint();
     void setBreakPoint(int pos);
     int getBreakPoint();
-    void setSamplesReady();
+
 private:
     QPixmap m_pixMap;
-    QImage m_waveImage;
     QLabel *m_pixLabel;
     QTimer *m_paintTimer;
-    QVector<double> m_samplesR;
-    QVector<double> m_samplesL;
-    int m_channelCount = 1;
 
-    WaveformThread *thread;
+    QVector<float> rms_left;
+    QVector<float> rms_right;
 
-    bool m_isClickable;
-    bool m_areSamplesReady;
-    int m_drawingIndex;
-    bool m_updateBreakPointRequired;
-    bool m_hasBreakPoint;
-    int m_breakPointPos;
+    QVector<float> average_left;
+    QVector<float> average_right;
 
-    void setWaveImage(QImage waveform);
-    void drawWave();
-    qreal getPeakValue(const QAudioFormat& format);
+    int channels;
 
-    // colors
-    QColor m_waveformColor { Qt::blue };
-    QColor m_progressColor { QColor(246, 134, 86) };
-    QColor m_waveformBackgroundColor { Qt::transparent };
+    WaveformBuilder *builder;
+
+    bool is_clickable;
+    bool is_breakpoint_changed;
+
+    int breakpoint_position;
+
+    bool update_breakpoint;
+    int breakpoint_pos;
+    bool has_breakpoint;
+
+    bool reset = false;
+
+    QVector<double> samples_left;
+    QVector<double> samples_right;
+
+    QColor waveform_color { QColor(50,50,200) };
+    QColor waveform_progress_color { QColor(246, 134, 86) };
+    QColor waveform_background_color { QColor(192,192,192) };
+
+    Q_PROPERTY( QColor waveformColor MEMBER waveform_color );
+    Q_PROPERTY( QColor waveformProgressColor MEMBER waveform_progress_color );
+    Q_PROPERTY( QColor waveformBackgroundColor MEMBER waveform_background_color );
+
+    void processData(QVector<float> left_rms, QVector<float> right_rms, QVector<float>  left_average, QVector<float>  right_average, int channel_count);
+    void paint();
+
+    double getMaxPeak(QVector<float> v);
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *);
 signals:
     void barClicked(int);
     void breakPointRemoved();

@@ -91,7 +91,7 @@ signals:
   void readingPositionChanged(int); // This signal is emitted each time the reading position changes. Parameter: position in milliseconds (-1 if no valid audio file loaded)
   void statusChanged(AudioPlayer::Status); // This signal is emitted each time the status changes.
   void decodingStarted();
-  void decodingFinished();
+  void decodingFinished(int channel_count, long sample_rate, long duration);
   void bufferReady(QAudioBuffer); // Buffer to be sent to the waveform widget
 };
 

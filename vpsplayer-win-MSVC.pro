@@ -7,7 +7,14 @@ DEFINES += USE_KISSFFT USE_SPEEX NO_EXCEPTIONS NO_THREADING __MSVC__
 HEADERS = src/Audio_player.h \
           src/Player_window.h \
           src/Playing_progress.h \
+          src/keyedit.h \
+          src/menustyle.h \
+          src/messagereceiver.h \
+          src/settingsdialog.h \
+          src/appsettings.h \
           src/tools.h \
+          src/waveformbuilder.h \
+          src/waveformwidget.h \
           rubberband/src/StretcherChannelData.h \
           rubberband/src/float_cast/float_cast.h \
           rubberband/src/StretcherImpl.h \
@@ -40,7 +47,14 @@ SOURCES = src/main.cpp \
           src/Audio_player.cpp \
           src/Player_window.cpp \
           src/Playing_progress.cpp \
+          src/keyedit.cpp \
+          src/menustyle.cpp \
+          src/messagereceiver.cpp \
+          src/settingsdialog.cpp \
+          src/appsettings.cpp \
           src/tools.cpp \
+          src/waveformbuilder.cpp \
+          src/waveformwidget.cpp \
           rubberband/src/RubberBandStretcher.cpp \
           rubberband/src/StretcherProcess.cpp \
           rubberband/src/StretchCalculator.cpp \
@@ -62,6 +76,8 @@ SOURCES = src/main.cpp \
           rubberband/src/kissfft/kiss_fft.c \
           rubberband/src/kissfft/kiss_fftr.c \
           rubberband/src/speex/resample.c
-RESOURCES = icons.qrc
+
+          HEADERS += 
+RESOURCES = icons.qrc styles.qrc
 RC_FILE = vpsplayer-win.rc
 TARGET = vpsplayer

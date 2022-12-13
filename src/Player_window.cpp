@@ -165,7 +165,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   layout_waveform->addWidget(widget_waveform);
   QGroupBox *groupbox_waveform = new QGroupBox();
   groupbox_waveform->setLayout(layout_waveform);
-  groupbox_waveform->setMinimumHeight(150);
+  groupbox_waveform->setMinimumHeight(280);
 
   QVBoxLayout *layout_player = new QVBoxLayout;
   layout_player->addLayout(layout_buttons);
@@ -246,8 +246,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::readingPositionChanged, this, &PlayerWindow::updateReadingPosition);
   connect(audio_player, &AudioPlayer::audioDecodingError, this, &PlayerWindow::displayAudioDecodingError);
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
-  connect(audio_player, &AudioPlayer::bufferReady, widget_waveform, &WaveformWidget::appendSamples);
-  connect(audio_player, &AudioPlayer::decodingFinished, widget_waveform, &WaveformWidget::setSamplesReady);
+  connect(audio_player, &AudioPlayer::bufferReady, widget_waveform, &WaveformWidget::onBufferReady);
+  connect(audio_player, &AudioPlayer::decodingFinished, widget_waveform, &WaveformWidget::onDecodingFinished);
   
   if (settings->getShowWaveform())
   {
@@ -351,7 +351,6 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
   setWindowTitle(QStringLiteral("VPS Player [%1]").arg(file_info.fileName()));
   music_directory = file_info.canonicalPath();
   audio_player->decodeFile(file_info.canonicalFilePath());
-  widget_waveform->clearSamples();
   widget_waveform->resetBreakPoint();
   emit pitchValueChanged(0);
   emit playbackSpeedChanged(0);
@@ -564,6 +563,7 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     break;
   case AudioPlayer::Playing :
     set_controls("Playing", true, false, true, false, true);
+    playAudioFromBreakpoint();
     break;
   }
 }

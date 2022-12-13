@@ -451,7 +451,7 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
 }
 
 WaveformWidget {
-    qproperty-waveformColor: #0000FF;
-    qproperty-waveformProgressColor: #F68656;
-    qproperty-waveformBackgroundColor: transparent;
+    qproperty-waveformColor: rgb(50,50,200);
+    qproperty-waveformProgressColor: rgb(46, 134, 86);
+    qproperty-waveformBackgroundColor: rgb(192,192,192);
 }

@@ -366,7 +366,7 @@ void AudioPlayer::finishDecoding()
   status = AudioPlayer::Stopped;
   emit readingPositionChanged(0);
   startPlaying();
-  emit decodingFinished();
+  emit decodingFinished(audio_decoder->audioFormat().channelCount(), audio_decoder->audioFormat().sampleRate(), audio_decoder->duration());
 }
 
 
