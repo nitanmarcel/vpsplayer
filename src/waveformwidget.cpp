@@ -65,6 +65,7 @@ void WaveformWidget::mousePressEvent(QMouseEvent *event)
 
 void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
 {
+  emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) : 0);
   event->accept();
 }
 
