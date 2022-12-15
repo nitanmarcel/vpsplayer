@@ -12,7 +12,7 @@ AppSettings::AppSettings(QObject *parent)
     engineIndex = settings->value("engine_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("preserve_formant_shape", true).value<bool>();
-    showWaveform = settings->value("show_waveform", false).value<bool>();
+    showWaveform = settings->value("show_waveform", true).value<bool>();
     pitchModifierValue = settings->value("pitch_modifier_value", 2).value<int>();
     speedModifierValue = settings->value("speed_modifier_value", 2).value<int>();
 
