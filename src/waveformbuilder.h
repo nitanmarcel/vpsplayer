@@ -39,7 +39,7 @@ protected:
     void run();
 
 signals:
-    void dataReady(QVector<float>  left_rms, QVector<float>  right_rms, QVector<float>  left_average, QVector<float>  right_average, int channel_count);
+    void dataReady(QVector<double>  left_rms, QVector<double>  right_rms, QVector<double>  left_average, QVector<double>  right_average, int channel_count);
 };
 
 #endif // WAVEFORMBUILDER_H

@@ -15,7 +15,6 @@ WaveformBuilder::~WaveformBuilder()
     mutex.lock();
     abort = true;
     mutex.unlock();
-
     wait();
 
 }
@@ -67,23 +66,24 @@ void WaveformBuilder::reset()
 
 void WaveformBuilder::run()
 {
-    QVector<float> rms_left;
-    QVector<float> rms_right;
+    QVector<double> rms_left;
+    QVector<double> rms_right;
 
-    QVector<float> average_left;
-    QVector<float> average_right;
+    QVector<double> average_left;
+    QVector<double> average_right;
 
     const long samples_width = static_cast<long>((duration / 1000) * sample_rate);
     const long long samples_per_pixel = static_cast<int>(samples_width / window_width);
 
     int nb_samples = samples_left.size();
 
-    int nr = 0;
-
     for (int i = 0; i < nb_samples; i+=samples_per_pixel)
     {
         if (abort == true)
+        {
+            abort = false;
             break;
+        }
         float sum_left = 0;
         float sum_right = 0;
 
@@ -111,22 +111,20 @@ void WaveformBuilder::run()
             }
         }
 
-        float mean_left = squared_sum_left / samples_per_pixel;
-        float mean_right = squared_sum_right / samples_per_pixel;
+        double mean_left = squared_sum_left / samples_per_pixel;
+        double mean_right = squared_sum_right / samples_per_pixel;
 
-        float rms_point_left = qsqrt(mean_left);
-        float rms_point_right = qsqrt(mean_right);
+        double rms_point_left = qsqrt(mean_left);
+        double rms_point_right = qsqrt(mean_right);
 
         rms_left.push_back(rms_point_left);
         rms_right.push_back(rms_point_right);
 
-        float average_point_left = (sum_left * 2) / samples_per_pixel;
-        float average_point_right = (sum_right * 2) / samples_per_pixel;
+        double average_point_left = (sum_left * 2) / samples_per_pixel;
+        double average_point_right = (sum_right * 2) / samples_per_pixel;
 
         average_left.push_back(average_point_left);
         average_right.push_back(average_point_right);
-
-        nr+= samples_per_pixel;
     }
     emit dataReady(rms_left, rms_right, average_left, average_right, channel_count);
 }

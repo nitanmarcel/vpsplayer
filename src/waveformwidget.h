@@ -48,11 +48,11 @@ private:
     QLabel *m_pixLabel;
     QTimer *m_paintTimer;
 
-    QVector<float> rms_left;
-    QVector<float> rms_right;
+    QVector<double> rms_left;
+    QVector<double> rms_right;
 
-    QVector<float> average_left;
-    QVector<float> average_right;
+    QVector<double> average_left;
+    QVector<double> average_right;
 
     int channels;
 
@@ -80,10 +80,11 @@ private:
     Q_PROPERTY( QColor waveformProgressColor MEMBER waveform_progress_color );
     Q_PROPERTY( QColor waveformBackgroundColor MEMBER waveform_background_color );
 
-    void processData(QVector<float> left_rms, QVector<float> right_rms, QVector<float>  left_average, QVector<float>  right_average, int channel_count);
+    void processData(QVector<double> left_rms, QVector<double> right_rms, QVector<double>  left_average, QVector<double>  right_average, int channel_count);
     void paint();
 
     double getMaxPeak(QVector<float> v);
+    double calcScareFactor(QVector<double>& wf1, const QVector<double>& wf2);
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;

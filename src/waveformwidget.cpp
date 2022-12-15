@@ -71,7 +71,6 @@ void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
 void WaveformWidget::resizeEvent(QResizeEvent *e)
 {
     QAbstractSlider::resizeEvent(e);
-    auto i = builder->wait();
     builder->setProprieties(-1, -1, -1, width(), height());
 }
 
@@ -106,7 +105,7 @@ void WaveformWidget::onDecodingFinished(int channel_count, long sample_rate, lon
     reset = true; // make sure we reset next time
 }
 
-void WaveformWidget::processData(QVector<float> left_rms, QVector<float> right_rms, QVector<float>  left_average, QVector<float>  right_average, int channel_count)
+void WaveformWidget::processData(QVector<double> left_rms, QVector<double> right_rms, QVector<double>  left_average, QVector<double>  right_average, int channel_count)
 {
     rms_left = left_rms;
     rms_right = right_rms;
@@ -115,18 +114,16 @@ void WaveformWidget::processData(QVector<float> left_rms, QVector<float> right_r
     channels = channel_count;
 }
 
-double WaveformWidget::getMaxPeak(QVector<float> v)
+double WaveformWidget::calcScareFactor(QVector<double>& wf1, const QVector<double>& wf2)
 {
-    double max = v.at(0);
+    // Find the maximum value of the two waveforms
+    double maxValue = std::max(
+        *std::max_element(wf1.begin(), wf1.end()),
+        *std::max_element(wf2.begin(), wf2.end())
+    );
 
-    if (v.size() == 0)
-        return max;
-    for (int i = 0; i < v.size(); i++)
-    {
-        if (v[i] > max)
-            max = v[i];
-    }
-    return max;
+    // Calculate the scare factor as the maximum value of the two waveforms
+    return maxValue;
 }
 
 void WaveformWidget::paint()
@@ -140,171 +137,108 @@ void WaveformWidget::paint()
     QPainter painter(&m_pixMap);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-    QVector<float> rmsL = rms_left;
-    QVector<float> rmsR = rms_right;
+    QVector<double> rmsL = rms_left;
+    QVector<double> rmsR = rms_right;
 
-    QVector<float> avrL = average_left;
-    QVector<float> avrR = average_right;
+    QVector<double> avrL = average_left;
+    QVector<double> avrR = average_right;
 
     long center = height() / 2;
 
-    double peak = getMaxPeak(avrL);
-    double scale_factor = 1.0/peak;
-    double padding = 0.4;
-    if (channels == 2)
-        padding = 0.5;
-    scale_factor = scale_factor - scale_factor / padding;
+    double avr_scale_factor = calcScareFactor(avrL, avrR);
+    double rms_scale_factor = calcScareFactor(rmsL, rmsR);
 
     int counter = 0;
 
-    // FIXME
-
-    painter.setPen(QPen(waveform_color, 2, Qt::SolidLine, Qt::FlatCap));
-
-    if (channels == 1)
-    {
-        painter.drawLine(counter, center, width(), center);
-    }
-    else if (channels == 2)
-    {
-        QLineF lines[2] = {
-            QLineF(counter, center - (center / 2), width(), center - (center / 2)),
-            QLineF(counter, center + (center / 2), width(), center + (center / 2))
-        };
-
-        painter.drawLines(lines, 2);
-    }
-
-    //
-
     for (int i = 0; i < avrL.size(); ++i)
     {
-       if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
-       {
-           painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-       }
-       else
-       {
-           painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-       }
+        if (channels == 1)
+        {
+            // LEFT
 
-      if (channels == 1)
-      {
-          QLineF pointsAVRGL[2] = {
-              QLineF(counter, center, counter, center+((this->height()/4)*avrL[i]*scale_factor)),
-              QLineF(counter, center, counter, center-((this->height()/4)*avrL[i]*scale_factor))
-          };
+            if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
+            {
+                painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
+            }
+            else
+            {
+                painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
+            }
 
-          QLineF pointsRMSL[3] = {
-              QLineF(counter, center, counter, center+((this->height()/4)*rmsL[i]*scale_factor / 2)),
-              QLineF(counter, center, counter, center-((this->height()/4)*rmsL[i]*scale_factor / 2)),
-          };
+            painter.drawLine(counter, center, counter, center - avrL[i] / avr_scale_factor * center / 2);
+            painter.drawLine(counter, center, counter, center + avrL[i] / avr_scale_factor * center / 2);
 
-          if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
-          {
+            // RMS
+            if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
+            {
+                painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
+            }
+            else
+            {
+                painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
+            }
 
-              // Draw avearge Point
-              painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
+            painter.drawLine(counter, center, counter, center - rmsL[i] / rms_scale_factor * center / 6);
+            painter.drawLine(counter, center, counter, center + rmsL[i] / rms_scale_factor * center / 6);
+        }
+        else if (channels == 2)
+        {
+            // LEFT
 
-              // FIXME
-              painter.setPen(QPen(waveform_progress_color.lighter(), 2, Qt::SolidLine, Qt::FlatCap));
-              painter.drawLine(counter - 1, center - (center / 2), counter, center - (center / 2));
-              //
+            if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
+            {
+                painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
+            }
+            else
+            {
+                painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
+            }
 
-              painter.drawLines(pointsAVRGL, 3);
+            painter.drawLine(i, (center / 2), i, (center / 2) - avrL[i] / avr_scale_factor * center / 2);
+            painter.drawLine(i, (center / 2), i, (center / 2) + avrL[i] / avr_scale_factor * center / 2);
 
-              // Draw RMS
-              painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-              painter.drawLines(pointsRMSL, 2);
-          }
-          else
-          {
-              // Draw avearge Point
-              painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
-              painter.drawLines(pointsAVRGL, 3);
+            // RMS
+            if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
+            {
+                painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
+            }
+            else
+            {
+                painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
+            }
 
-              // Draw RMS
-              painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-              painter.drawLines(pointsRMSL, 2);
-          }
-      }
-      if (channels == 2)
-      {
-                QLineF pointsAVRGL[2] = {
-                    QLineF(counter, center - (center / 2), counter, center - (center / 2)+((this->height()/4)*avrL[i]*scale_factor)),
-                    QLineF(counter, center - (center / 2), counter, center - (center / 2)-((this->height()/4)*avrL[i]*scale_factor))
-                };
+            painter.drawLine(i, (center / 2), i, (center / 2) - rmsL[i] / rms_scale_factor * center / 6);
+            painter.drawLine(i, (center / 2), i, (center / 2) + rmsL[i] / rms_scale_factor * center / 6);
 
-                QLineF pointsRMSL[2] = {
-                    QLineF(counter, center - (center / 2), counter, center - (center / 2)+((this->height()/4)*rmsL[i]*scale_factor / 2)),
-                    QLineF(counter, center - (center / 2), counter, center - (center / 2)-((this->height()/4)*rmsL[i]*scale_factor / 2)),
-                };
 
-                if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
-                {
-                    // Draw avearge Point
-                    painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsAVRGL, 2);
+            // RIGHT
 
-                    // FIXME
-                    painter.setPen(QPen(waveform_progress_color.lighter(), 2, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLine(counter - 1, center - (center / 2), counter, center - (center / 2));
-                    //
+            if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
+            {
+                painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
+            }
+            else
+            {
+                painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
+            }
 
-                    // Draw RMS
-                    painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsRMSL, 2);
-                }
-                else
-                {
-                    // Draw avearge Point
-                    painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsAVRGL, 2);
+            painter.drawLine(i, (center / 2) * 3, i, (center / 2) * 3 - avrR[i] / avr_scale_factor * center / 2);
+            painter.drawLine(i, (center / 2) * 3, i, (center / 2) * 3 + avrR[i] / avr_scale_factor * center / 2);
 
-                    // Draw RMS
-                    painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsRMSL, 2);
-                }
+            // RMS
+            if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
+            {
+                painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
+            }
+            else
+            {
+                painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
+            }
 
-                QLineF pointsAVRGR[2] = {
-                    QLineF(counter, center + (center / 2), counter, center + (center / 2)+((this->height()/4)*avrR[i]*scale_factor)),
-                    QLineF(counter, center + (center / 2), counter, center + (center / 2)-((this->height()/4)*avrR[i]*scale_factor))
-                };
-
-                QLineF pointsRMSR[2] = {
-                    QLineF(counter, center + (center / 2), counter, center + (center / 2)+((this->height()/4)*rmsR[i]*scale_factor / 2)),
-                    QLineF(counter, center + (center / 2), counter, center + (center / 2)-((this->height()/4)*rmsR[i]*scale_factor / 2))
-                };
-
-                if (QStyle::sliderValueFromPosition(minimum(), maximum(), i, width()) < value())
-                {
-
-                    // Draw avearge Point
-                    painter.setPen(QPen(waveform_progress_color, 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsAVRGR, 2);
-
-                    // FIXME
-                    painter.setPen(QPen(waveform_progress_color.lighter(), 2, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLine(counter - 1, center + (center / 2), counter, center + (center / 2));
-                    //
-
-                    // Draw RMS
-                    painter.setPen(QPen(waveform_progress_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsRMSR, 2);
-                }
-                else
-                {
-                    // Draw avearge Point
-                    painter.setPen(QPen(waveform_color, 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsAVRGR, 2);
-
-                    // Draw RMS
-                    painter.setPen(QPen(waveform_color.lighter(), 1, Qt::SolidLine, Qt::FlatCap));
-                    painter.drawLines(pointsRMSR, 2);
-                }
-
-      }
-      counter++;
+            painter.drawLine(i, (center / 2) * 3, i, (center / 2) * 3 - rmsR[i] / rms_scale_factor * center / 6);
+            painter.drawLine(i, (center / 2) * 3, i, (center / 2) * 3 + rmsR[i] / rms_scale_factor * center / 6);
+        }
+        counter++;
     }
 
     if (value() > 0)
