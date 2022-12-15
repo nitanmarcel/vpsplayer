@@ -43,7 +43,7 @@ void WaveformWidget::setClickable(bool clickable)
 void WaveformWidget::mousePressEvent(QMouseEvent *event)
 {
   if ((event->button() == Qt::RightButton) && is_clickable)
-      if ((event->x() > breakpoint_pos + 3) || (event->x() < breakpoint_pos - 3))
+      if ((event->x() > breakpoint_pos + 5) || (event->x() < breakpoint_pos - 5))
       {
           breakpoint_pos = event->x();
           this->has_breakpoint = true;
@@ -58,14 +58,28 @@ void WaveformWidget::mousePressEvent(QMouseEvent *event)
           this->update_breakpoint = true;
       }
   else if ((event->button() == Qt::LeftButton) && is_clickable)
+  {
+      qDebug() << event->x() << " : " << marker_start_pos;
+      if ((event->x() > marker_start_pos + 3) || (event->x() < marker_start_pos - 3))
+        {
+            marker_end_pos = event->x();
+            marker_start_pos = event->x();
+        }
+      else
+      {
+          marker_end_pos = 0;
+          marker_start_pos = 0;
+      }
       emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) : 0);
+  }
 
   event->accept();
 }
 
 void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) : 0);
+  if ((event->x() > marker_end_pos + 3) || (event->x() < marker_end_pos - 3))
+      marker_end_pos = event->x();
   event->accept();
 }
 
@@ -136,7 +150,8 @@ void WaveformWidget::paint()
     m_pixMap = QPixmap(size());
     m_pixMap.fill(waveform_background_color);
     QPainter painter(&m_pixMap);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.setBrush(Qt::NoBrush);
+    painter.setRenderHint(QPainter::LosslessImageRendering);
 
     QVector<double> rmsL = rms_left;
     QVector<double> rmsR = rms_right;
@@ -150,6 +165,9 @@ void WaveformWidget::paint()
     double rms_scale_factor = calcScareFactor(rmsL, rmsR);
 
     int counter = 0;
+
+    if (marker_start_pos + marker_end_pos > 0)
+        painter.fillRect(marker_start_pos, 0, marker_end_pos - marker_start_pos, height(), marker_background_color);
 
     for (int i = 0; i < avrL.size(); ++i)
     {
