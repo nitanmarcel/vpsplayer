@@ -563,7 +563,6 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     break;
   case AudioPlayer::Playing :
     set_controls("Playing", true, false, true, false, true);
-    playAudioFromBreakpoint();
     break;
   }
 }
