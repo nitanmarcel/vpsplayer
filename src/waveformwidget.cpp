@@ -118,7 +118,6 @@ void WaveformWidget::onDecodingFinished(int channel_count, long sample_rate, lon
 {
     builder->setProprieties(channel_count, sample_rate, duration, width(), height());
     reset = true; // make sure we reset next time
-    marker_start_pos = marker_end_pos = 0;
 }
 
 void WaveformWidget::processData(QVector<double> left_rms, QVector<double> right_rms, QVector<double>  left_average, QVector<double>  right_average, int channel_count)
