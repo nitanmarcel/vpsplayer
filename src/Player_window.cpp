@@ -379,15 +379,15 @@ void PlayerWindow::playAudio()
     {
       audio_player->resumePlaying();
     }
+    PlayerWindow::playAudioFromBreakpoint();
 }
 
 void PlayerWindow::playAudioFromBreakpoint()
 {
-    if (audio_player->getStatus() != AudioPlayer::Stopped && widget_waveform->getBreakPoint() != 0)
+    if (widget_waveform->getBreakPoint() != 0)
     {
         int breakpointPos = widget_waveform->getBreakPoint();
         audio_player->moveReadingPosition(qMax(0, breakpointPos));
-        playAudio();
     }
 }
 
@@ -541,9 +541,9 @@ void PlayerWindow::updateStatus(AudioPlayer::Status status)
     button_play->setEnabled(enable_play);
     button_pause->setEnabled(enable_pause);
     if (settings->getShowWaveform())
-        widget_waveform->setClickable(playback_begun);
+        widget_waveform->setClickable(enable_play || enable_pause);
     else
-        progress_playing->setClickable(playback_begun);
+        progress_playing->setClickable(enable_play || enable_pause);
   };
 
   switch(status) {
