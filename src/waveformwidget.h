@@ -28,7 +28,6 @@ class WaveformWidget : public QAbstractSlider
     Q_PROPERTY( QColor waveformColor MEMBER waveform_color );
     Q_PROPERTY( QColor waveformProgressColor MEMBER waveform_progress_color );
     Q_PROPERTY( QColor waveformBackgroundColor MEMBER waveform_background_color );
-    Q_PROPERTY( QColor markerBackgroundColor MEMBER marker_background_color );
 
     Q_OBJECT
 public:
@@ -68,9 +67,6 @@ private:
     int breakpoint_pos;
     bool has_breakpoint;
 
-    int marker_start_pos;
-    int marker_end_pos;
-
     bool reset = false;
 
     QVector<double> samples_left;
@@ -79,7 +75,10 @@ private:
     QColor waveform_color { QColor(50,50,200) };
     QColor waveform_progress_color { QColor(246, 134, 86) };
     QColor waveform_background_color { QColor(192,192,192) };
-    QColor marker_background_color {QColor(255, 255, 255 )};
+
+    Q_PROPERTY( QColor waveformColor MEMBER waveform_color );
+    Q_PROPERTY( QColor waveformProgressColor MEMBER waveform_progress_color );
+    Q_PROPERTY( QColor waveformBackgroundColor MEMBER waveform_background_color );
 
     void processData(QVector<double> left_rms, QVector<double> right_rms, QVector<double>  left_average, QVector<double>  right_average, int channel_count);
     void paint();
