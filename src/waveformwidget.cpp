@@ -58,14 +58,14 @@ void WaveformWidget::mousePressEvent(QMouseEvent *event)
           this->update_breakpoint = true;
       }
   else if ((event->button() == Qt::LeftButton) && is_clickable)
-      emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) : 0);
+      emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) - 50 : 0);
 
   event->accept();
 }
 
 void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) : 0);
+  emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) - 50 : 0);
   event->accept();
 }
 
@@ -90,7 +90,7 @@ void WaveformWidget::setBreakPoint(int pos)
 int WaveformWidget::getBreakPoint()
 {
     if (has_breakpoint)
-        return QStyle::sliderValueFromPosition(minimum(), maximum(), breakpoint_pos, width());
+        return QStyle::sliderValueFromPosition(minimum(), maximum(), breakpoint_pos, width()) - 50;
     return 0;
 }
 
