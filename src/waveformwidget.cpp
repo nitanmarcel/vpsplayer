@@ -1,6 +1,8 @@
 #include "waveformwidget.h"
 #include "math.h"
 
+#define CORRECTION_MS	100
+
 WaveformWidget::WaveformWidget()
 {
     qRegisterMetaType<QVector<float> >("QVector<float>");
@@ -58,14 +60,14 @@ void WaveformWidget::mousePressEvent(QMouseEvent *event)
           this->update_breakpoint = true;
       }
   else if ((event->button() == Qt::LeftButton) && is_clickable)
-      emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) - 50 : 0);
+      emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) - CORRECTION_ms : 0);
 
   event->accept();
 }
 
 void WaveformWidget::mouseMoveEvent(QMouseEvent *event)
 {
-  emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) - 50 : 0);
+  emit barClicked(event->x() > 5 ? QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width()) - CORRECTION_ms : 0);
   event->accept();
 }
 
@@ -90,7 +92,7 @@ void WaveformWidget::setBreakPoint(int pos)
 int WaveformWidget::getBreakPoint()
 {
     if (has_breakpoint)
-        return QStyle::sliderValueFromPosition(minimum(), maximum(), breakpoint_pos, width()) - 50;
+        return QStyle::sliderValueFromPosition(minimum(), maximum(), breakpoint_pos, width()) - CORRECTION_ms;
     return 0;
 }
 
