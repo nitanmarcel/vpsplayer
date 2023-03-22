@@ -90,7 +90,7 @@ void WaveformWidget::setBreakPoint(int pos)
 int WaveformWidget::getBreakPoint()
 {
     if (has_breakpoint)
-        return breakpoint_pos * (maximum() / width());
+        return QStyle::sliderValueFromPosition(minimum(), maximum(), breakpoint_pos, width());
     return 0;
 }
 

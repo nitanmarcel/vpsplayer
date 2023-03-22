@@ -6,6 +6,7 @@
 // You should have received a copy of the GNU General Public License along with VPS Player. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QToolTip>
+#include <QStyle>
 #include "Playing_progress.h"
 #include "tools.h"
 
@@ -67,5 +68,5 @@ void PlayingProgress::mousePressEvent(QMouseEvent *event)
 // Returns the position in milliseconds corresponding to the mouse position on the progress bar where the event occured
 int PlayingProgress::mouseEventPosition(const QMouseEvent *event) const
 {
-  return event->x() * (maximum() / width());
+  return QStyle::sliderValueFromPosition(minimum(), maximum(), event->x(), width());
 }
