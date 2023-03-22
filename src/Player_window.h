@@ -72,7 +72,7 @@ private:
   void displayAudioDeviceError(QAudio::Error error); // Prompt an error popup for an audio device error
   void openFileFromSelector(); // Open a new file (chosen with a file selector)
   void playAudio(); // Start or resume audio playing
-  void playAudioFromBreakpoint(); // Starts or resumes audio playing from a set breakpoint
+  void moveReadingPosToBreakpoint(); // Starts or resumes audio playing from a set breakpoint
   void pauseAudio(); // Pauses audio playing
   void stopAudio(); // Stops the audio playing
   void moveReadingPosition(); // Moves reading position when the waveform bar is clicked. Parameter: position change in milliseconds

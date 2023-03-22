@@ -379,10 +379,10 @@ void PlayerWindow::playAudio()
     {
       audio_player->resumePlaying();
     }
-    PlayerWindow::playAudioFromBreakpoint();
+  moveReadingPosToBreakpoint();
 }
 
-void PlayerWindow::playAudioFromBreakpoint()
+void PlayerWindow::moveReadingPosToBreakpoint()
 {
     if (widget_waveform->getBreakPoint() != 0)
     {
@@ -395,6 +395,7 @@ void PlayerWindow::playAudioFromBreakpoint()
 void PlayerWindow::pauseAudio()
 {
     audio_player->pausePlaying();
+    PlayerWindow::moveReadingPosToBreakpoint();
 }
 
 // Stops audio playing
@@ -614,10 +615,6 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
             if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
             {
                 pauseAudio();
-            }
-            else if (audio_player->getStatus() != AudioPlayer::Stopped)
-            {
-                playAudioFromBreakpoint();
             }
         }
     }
