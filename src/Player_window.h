@@ -59,6 +59,7 @@ private:
   int playback_speed;
   int pitch_value;
   bool key_modifier;
+  bool skip_breakpoint;
 
   AppSettings *settings;
   

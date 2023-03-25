@@ -44,6 +44,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
   key_modifier = false;
+  skip_breakpoint = false;
   modifierKey = settings->getModifierKey();
   pauseKey = settings->getPauseKey();
   pauseKeyAlt = settings->getPauseKeyAlt();
@@ -286,8 +287,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 
   resize(680, height());
   restoreGeometry(settings->getGeometry());
-
-  modifierKeyPressed = false;
 }
 
 
@@ -381,7 +380,6 @@ void PlayerWindow::playAudio()
     {
       audio_player->resumePlaying();
     }
-  moveReadingPosToBreakpoint();
 }
 
 void PlayerWindow::moveReadingPosToBreakpoint()
@@ -397,7 +395,8 @@ void PlayerWindow::moveReadingPosToBreakpoint()
 void PlayerWindow::pauseAudio()
 {
     audio_player->pausePlaying();
-    PlayerWindow::moveReadingPosToBreakpoint();
+    if (!skip_breakpoint)
+      PlayerWindow::moveReadingPosToBreakpoint();
 }
 
 // Stops audio playing
@@ -612,12 +611,15 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     }
     else if (e->key() == pauseKeyAlt && !key_modifier)
     {
-        if (widget_waveform->getBreakPoint() > 0)
+        if (button_play->isEnabled())
         {
-            if ((audio_player->getStatus() != AudioPlayer::Paused) && (audio_player->getStatus() != AudioPlayer::Stopped))
-            {
-                pauseAudio();
-            }
+            button_play->click();
+            skip_breakpoint = false;
+        }
+        else if (button_pause->isEnabled())
+        {
+          skip_breakpoint = true;
+          button_pause->click();
         }
     }
     else if ((e->key() == pauseKey || e->key() == pauseKeyAlt) && key_modifier)
