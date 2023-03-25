@@ -252,7 +252,7 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   if (settings->getShowWaveform())
   {
       connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
-      connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), audio_player, &AudioPlayer::moveReadingPosition);
+      connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), this, &PlayerWindow::moveReadingPosToBreakpoint);
   }
 
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchModifierValueChanged), [this](int value){ pitchModifierValue = value; });
@@ -286,6 +286,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 
   resize(680, height());
   restoreGeometry(settings->getGeometry());
+
+  modifierKeyPressed = false;
 }
 
 
@@ -384,7 +386,7 @@ void PlayerWindow::playAudio()
 
 void PlayerWindow::moveReadingPosToBreakpoint()
 {
-    if (widget_waveform->getBreakPoint() != 0)
+    if (widget_waveform->getBreakPoint() != 0 && !key_modifier)
     {
         int breakpointPos = widget_waveform->getBreakPoint();
         audio_player->moveReadingPosition(qMax(0, breakpointPos));
