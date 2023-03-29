@@ -380,6 +380,10 @@ void PlayerWindow::playAudio()
     {
       audio_player->resumePlaying();
     }
+    if (!skip_breakpoint)
+    {
+      moveReadingPosToBreakpoint();
+    }
 }
 
 void PlayerWindow::moveReadingPosToBreakpoint()
@@ -617,6 +621,7 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     }
     else if (e->key() == pauseKeyAlt && !key_modifier)
     {
+        skip_breakpoint = false;
         if (button_play->isEnabled())
         {
             button_play->click();
