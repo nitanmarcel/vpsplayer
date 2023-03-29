@@ -605,20 +605,24 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     else if (e->key() == pauseKey && !key_modifier)
     {
         if (button_play->isEnabled())
-            button_play->click();
+           {
+              button_play->click();
+              skip_breakpoint = false;
+           }
         else if (button_pause->isEnabled())
-            button_pause->click();
+            {
+              skip_breakpoint = true;
+              button_pause->click();
+            }
     }
     else if (e->key() == pauseKeyAlt && !key_modifier)
     {
         if (button_play->isEnabled())
         {
             button_play->click();
-            skip_breakpoint = false;
         }
         else if (button_pause->isEnabled())
         {
-          skip_breakpoint = true;
           button_pause->click();
         }
     }
