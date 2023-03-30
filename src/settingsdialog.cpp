@@ -67,15 +67,27 @@ SettingsDialog::SettingsDialog()
     layout_key_settings_pause->addWidget(key_settings_pause_linedit);
     layout_keys_settings->addLayout(layout_key_settings_pause);
 
+    QVBoxLayout *layout_key_settings_pause_alt_v = new QVBoxLayout();
     QHBoxLayout *layout_key_settings_pause_alt = new QHBoxLayout;
     QLabel *key_settings_pause_alt_label = new QLabel("Pause/Resume breakpoint");
     key_settings_pause_alt_linedit = new KeyEdit;
     key_settings_pause_alt_linedit->setMaximumWidth(100);
     key_settings_pause_alt_linedit->setReadOnly(true);
     key_settings_pause_alt_linedit->setKey(app_settings->getPauseKeyAlt());
+    
     layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_label);
     layout_key_settings_pause_alt->addWidget(key_settings_pause_alt_linedit);
-    layout_keys_settings->addLayout(layout_key_settings_pause_alt);
+
+    layout_key_settings_pause_alt_v->addLayout(layout_key_settings_pause_alt);
+
+    QComboBox *combobox_alt_behaviour = new QComboBox();
+    combobox_alt_behaviour->addItem("Pause in place, resume from breakpoint");
+    combobox_alt_behaviour->addItem("Reset to breakpoint, resume from breakpoint");
+    combobox_alt_behaviour->setToolTip("Changes the behaviour of pause/resume from breakpoint");
+    combobox_alt_behaviour->setCurrentIndex(app_settings->getAltPauseKeyIndex());
+    layout_key_settings_pause_alt_v->addWidget(combobox_alt_behaviour);
+
+    layout_keys_settings->addLayout(layout_key_settings_pause_alt_v);
 
     QHBoxLayout *layout_key_settings_pitch_plus = new QHBoxLayout;
     QLabel *key_settings_pitch_plus_label = new QLabel("Pitch+");
@@ -182,6 +194,7 @@ SettingsDialog::SettingsDialog()
     connect(this, &QDialog::rejected, [this](){ releaseKeyboard(); });
 
     connect(combobox_engine, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ emitIndexOptionUseR3EngineChanged(index); });
+    connect(combobox_alt_behaviour, qOverload<int>(&QComboBox::currentIndexChanged), [this](int index){ emitIndexOptionAltPauseAltChanged(index); });
     connect(check_high_quality, &QAbstractButton::toggled, [this](bool checked){ emitCheckUseHighQualityChanged(checked); });
     connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emitCheckFormantPreservedChanged(checked); });
     connect(check_enable_waveform, &QAbstractButton::toggled, [this](bool checked){  emitCheckEnableWaveformChanged(checked); });
@@ -197,10 +210,6 @@ SettingsDialog::SettingsDialog()
     connect(key_settings_speed_minus_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "speed_minus"; waitForKeyInput = hasFocus; });
     connect(key_settings_playback_plus_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "playback_plus"; waitForKeyInput = hasFocus; });
     connect(key_settings_playback_minus_linedit, &KeyEdit::focussed, [this](bool hasFocus){keyInputReciever = "playback_minus"; waitForKeyInput = hasFocus; });
-
-    emitIndexOptionUseR3EngineChanged(app_settings->getEngineIndex());
-    emitCheckUseHighQualityChanged(app_settings->getHighQuality());
-    emitCheckFormantPreservedChanged(app_settings->getPerserveFormatShape());
 }
 
 // Destructor
@@ -219,6 +228,12 @@ void SettingsDialog::emitIndexOptionUseR3EngineChanged(int index)
 {
     app_settings->setEngineIndex(index);
     emit indexOptionUseR3EngineChanged(index);
+}
+
+void SettingsDialog::emitIndexOptionAltPauseAltChanged(int index)
+{
+    app_settings->setAltPauseKeyIndex(index);
+    emit indexOptionAltPauseAltChanged(index);
 }
 
 void SettingsDialog::emitCheckUseHighQualityChanged(bool enabled)

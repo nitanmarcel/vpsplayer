@@ -379,6 +379,8 @@ void PlayerWindow::playAudio()
   else
     {
       audio_player->resumePlaying();
+      if (!skip_breakpoint && settings->getAltPauseKeyIndex() == 0)
+        PlayerWindow::moveReadingPosToBreakpoint();
     }
 }
 
@@ -395,7 +397,7 @@ void PlayerWindow::moveReadingPosToBreakpoint()
 void PlayerWindow::pauseAudio()
 {
     audio_player->pausePlaying();
-    if (!skip_breakpoint)
+    if (!skip_breakpoint && settings->getAltPauseKeyIndex() == 1)
       PlayerWindow::moveReadingPosToBreakpoint();
 }
 

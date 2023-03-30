@@ -15,6 +15,7 @@ public:
     void setHighQuality(bool enabled);
     void setPerserveFormatShape(bool enabled);
     void setEngineIndex(int index);
+    void setAltPauseKeyIndex(int index);
     void setShowWaveform(bool enabled);
     void setSpeedModifierValue(int value);
     void setPitchModifierValue(int value);
@@ -32,6 +33,7 @@ public:
     bool getPerserveFormatShape();
     bool getShowWaveform();
     int getEngineIndex();
+    int getAltPauseKeyIndex();
     int getPitchModifierValue();
     int getSpeedModifierValue();
     int getModifierKey();
@@ -48,6 +50,7 @@ private:
     QSettings *settings;
     QByteArray geometry;
     int engineIndex;
+    int altPauseKeyIndex;
     bool highQuality;
     bool perserveFormatShape;
     bool showWaveform;

@@ -33,6 +33,7 @@ private:
     QString keyInputReciever;
 
     void emitIndexOptionUseR3EngineChanged(int index);
+    void emitIndexOptionAltPauseAltChanged(int index);
     void emitCheckUseHighQualityChanged(bool enabled);
     void emitCheckFormantPreservedChanged(bool enabled);
     void emitCheckEnableWaveformChanged(bool enabled);
@@ -59,6 +60,7 @@ public:
 
 signals:
     int indexOptionUseR3EngineChanged(int);
+    int indexOptionAltPauseAltChanged(int);
     bool checkUseHighQualityChanged(bool);
     bool checkFormantPreservedChanged(bool);
     bool checkEnableWaveformChanged(bool enabled);

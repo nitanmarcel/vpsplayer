@@ -10,6 +10,7 @@ AppSettings::AppSettings(QObject *parent)
 
     geometry = settings->value("geometry", QByteArray()).value<QByteArray>();
     engineIndex = settings->value("engine_index", 1).value<int>();
+    altPauseKeyIndex = settings->value("alt_pause_index", 1).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("preserve_formant_shape", true).value<bool>();
     showWaveform = settings->value("show_waveform", true).value<bool>();
@@ -43,6 +44,13 @@ void AppSettings::setEngineIndex(int index)
 {
     engineIndex = index;
     settings->setValue("engine_index", index);
+    settings->sync();
+}
+
+void AppSettings::setAltPauseKeyIndex(int index)
+{
+    altPauseKeyIndex = index;
+    settings->setValue("alt_pause_index", index);
     settings->sync();
 }
 
@@ -151,6 +159,11 @@ QByteArray AppSettings::getGeometry()
 int AppSettings::getEngineIndex()
 {
     return engineIndex;
+}
+
+int AppSettings::getAltPauseKeyIndex()
+{
+    return altPauseKeyIndex;
 }
 
 bool AppSettings::getHighQuality()
