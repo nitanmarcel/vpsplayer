@@ -10,7 +10,7 @@ AppSettings::AppSettings(QObject *parent)
 
     geometry = settings->value("geometry", QByteArray()).value<QByteArray>();
     engineIndex = settings->value("engine_index", 1).value<int>();
-    altPauseKeyIndex = settings->value("alt_pause_index", 1).value<int>();
+    altPauseKeyIndex = settings->value("alt_pause_index", 0).value<int>();
     highQuality = settings->value("high_quality", true).value<bool>();
     perserveFormatShape = settings->value("preserve_formant_shape", true).value<bool>();
     showWaveform = settings->value("show_waveform", true).value<bool>();

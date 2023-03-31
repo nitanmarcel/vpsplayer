@@ -59,7 +59,6 @@ private:
   int playback_speed;
   int pitch_value;
   bool key_modifier;
-  bool skip_breakpoint;
 
   AppSettings *settings;
   
@@ -73,8 +72,10 @@ private:
   void displayAudioDeviceError(QAudio::Error error); // Prompt an error popup for an audio device error
   void openFileFromSelector(); // Open a new file (chosen with a file selector)
   void playAudio(); // Start or resume audio playing
-  void moveReadingPosToBreakpoint(); // Starts or resumes audio playing from a set breakpoint
+  void playAudioBreakpoint(); // Starts or resumes audio playing from a set breakpoint
+  void moveReadingPosToBreakpoint(); // Moves the reading position to the set breakpoint
   void pauseAudio(); // Pauses audio playing
+  void pauseAudioFromBreakpoint(); // Pauses audio playing and resets to a set breakpoint
   void stopAudio(); // Stops the audio playing
   void moveReadingPosition(); // Moves reading position when the waveform bar is clicked. Parameter: position change in milliseconds
   void moveReadingPositionBar(int delta); // Moves reading position when the progress bar is clicked. Parameter: position change in milliseconds

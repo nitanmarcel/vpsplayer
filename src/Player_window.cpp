@@ -44,7 +44,6 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
   key_modifier = false;
-  skip_breakpoint = false;
   modifierKey = settings->getModifierKey();
   pauseKey = settings->getPauseKey();
   pauseKeyAlt = settings->getPauseKeyAlt();
@@ -379,7 +378,22 @@ void PlayerWindow::playAudio()
   else
     {
       audio_player->resumePlaying();
-      if (!skip_breakpoint && settings->getAltPauseKeyIndex() == 0)
+    }
+}
+
+
+void PlayerWindow::playAudioBreakpoint()
+{
+  if (audio_player->getStatus() == AudioPlayer::Stopped)
+    {
+      audio_player->startPlaying();
+      if (settings->getAltPauseKeyIndex() == 1)
+        PlayerWindow::moveReadingPosToBreakpoint();
+    }
+  else
+    {
+      audio_player->resumePlaying();
+      if (settings->getAltPauseKeyIndex() == 0)
         PlayerWindow::moveReadingPosToBreakpoint();
     }
 }
@@ -397,7 +411,13 @@ void PlayerWindow::moveReadingPosToBreakpoint()
 void PlayerWindow::pauseAudio()
 {
     audio_player->pausePlaying();
-    if (!skip_breakpoint && settings->getAltPauseKeyIndex() == 1)
+}
+
+
+void PlayerWindow::pauseAudioFromBreakpoint()
+{
+    audio_player->pausePlaying();
+    if (settings->getAltPauseKeyIndex() == 1)
       PlayerWindow::moveReadingPosToBreakpoint();
 }
 
@@ -607,25 +627,23 @@ void PlayerWindow::keyPressEvent(QKeyEvent *e)
     else if (e->key() == pauseKey && !key_modifier)
     {
         if (button_play->isEnabled())
-           {
-              button_play->click();
-              skip_breakpoint = false;
-           }
+        {
+            playAudio();
+        }
         else if (button_pause->isEnabled())
-            {
-              skip_breakpoint = true;
-              button_pause->click();
-            }
+        {
+          pauseAudio();
+        }
     }
     else if (e->key() == pauseKeyAlt && !key_modifier)
     {
         if (button_play->isEnabled())
         {
-            button_play->click();
+            playAudioBreakpoint();
         }
         else if (button_pause->isEnabled())
         {
-          button_pause->click();
+          pauseAudioFromBreakpoint();
         }
     }
     else if ((e->key() == pauseKey || e->key() == pauseKeyAlt) && key_modifier)
