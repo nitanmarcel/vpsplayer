@@ -28,6 +28,8 @@ public:
     void setSpeedSliderKeyMinus(int key);
     void setPlaybackSliderKeyPlus(int key);
     void setPlaybackSliderKeyMinus(int key);
+    void setEventLoggingEnabled(bool enabled);
+    void setCustomLogPath(const QString &path);
     QByteArray getGeometry();
     bool getHighQuality();
     bool getPerserveFormatShape();
@@ -45,6 +47,8 @@ public:
     int getSpeedSliderKeyMinus();
     int getPlaybackSliderKeyPlus();
     int getPlaybackSliderKeyMinus();
+    bool getEventLoggingEnabled();
+    QString getCustomLogPath();
 
 private:
     QSettings *settings;
@@ -65,6 +69,8 @@ private:
     int speedSliderKeyMinus;
     int playbackSliderKeyPlus;
     int playbackSliderKeyMinus;
+    bool eventLoggingEnabled;
+    QString customLogPath;
 };
 
 #endif // APPSETTINGS_H

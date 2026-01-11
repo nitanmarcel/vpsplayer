@@ -5,6 +5,8 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QKeyEvent>
+#include <QLineEdit>
+#include <QPushButton>
 #include "appsettings.h"
 #include "keyedit.h"
 
@@ -15,6 +17,10 @@ private:
     QComboBox *combobox_engine;
     QCheckBox *check_high_quality;
     QCheckBox *check_enable_waveform;
+    QCheckBox *check_enable_event_logging;
+    QLineEdit *lineedit_log_path;
+    QPushButton *button_browse_log_path;
+    QPushButton *button_reset_log_path;
     QWidget *widget_settings;
     AppSettings *app_settings;
 
@@ -37,6 +43,10 @@ private:
     void emitCheckUseHighQualityChanged(bool enabled);
     void emitCheckFormantPreservedChanged(bool enabled);
     void emitCheckEnableWaveformChanged(bool enabled);
+    void emitCheckEnableEventLoggingChanged(bool enabled);
+    void emitCustomLogPathChanged(const QString &path);
+    void browseLogPath();
+    void resetLogPath();
     void emitPitchModifierValueChanged(int value);
     void emitSpeedModifierValueChanged(int value);
     void emitModifierKeyChanged(int key);
@@ -64,6 +74,8 @@ signals:
     bool checkUseHighQualityChanged(bool);
     bool checkFormantPreservedChanged(bool);
     bool checkEnableWaveformChanged(bool enabled);
+    bool checkEnableEventLoggingChanged(bool enabled);
+    void customLogPathChanged(const QString &path);
     int pitchModifierValueChanged(int value);
     int speedModifierValueChanged(int value);
     int modifierKeyChanged(int key);

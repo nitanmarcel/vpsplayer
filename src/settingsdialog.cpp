@@ -1,9 +1,11 @@
 #include "settingsdialog.h"
 #include "appsettings.h"
+#include "eventlogger.h"
 #include <QLabel>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QSpinBox>
+#include <QFileDialog>
 
 #include <QDebug>
 SettingsDialog::SettingsDialog()
@@ -33,11 +35,30 @@ SettingsDialog::SettingsDialog()
     check_enable_waveform = new QCheckBox("Enable waveform (affects performance / requires restart)");
     check_enable_waveform->setToolTip("Displays an waveform that acts as a progress bar. (Affects performance");
 
+    check_enable_event_logging = new QCheckBox("Enable event logging");
+    check_enable_event_logging->setToolTip("Log player events (play, pause, stop, skip, etc.) to a log file");
+
+    QHBoxLayout *layout_log_path = new QHBoxLayout;
+    QLabel *label_log_path = new QLabel("Log folder:");
+    lineedit_log_path = new QLineEdit;
+    lineedit_log_path->setPlaceholderText(EventLogger::getDefaultLogDirectory());
+    lineedit_log_path->setText(app_settings->getCustomLogPath());
+    lineedit_log_path->setToolTip("Custom folder for log files. Leave empty to use default location.");
+    button_browse_log_path = new QPushButton("Browse...");
+    button_reset_log_path = new QPushButton("Reset");
+    button_reset_log_path->setToolTip("Reset to default log folder");
+    layout_log_path->addWidget(label_log_path);
+    layout_log_path->addWidget(lineedit_log_path, 1);
+    layout_log_path->addWidget(button_browse_log_path);
+    layout_log_path->addWidget(button_reset_log_path);
+
     QVBoxLayout *layout_general_settings = new QVBoxLayout;
     layout_general_settings->addLayout(layout_engine);
     layout_general_settings->addWidget(check_high_quality);
     layout_general_settings->addWidget(check_formant_preserved);
     layout_general_settings->addWidget(check_enable_waveform);
+    layout_general_settings->addWidget(check_enable_event_logging);
+    layout_general_settings->addLayout(layout_log_path);
     combobox_engine->setCurrentIndex(app_settings->getEngineIndex());
     check_high_quality->setChecked(app_settings->getHighQuality());
     check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
@@ -189,6 +210,7 @@ SettingsDialog::SettingsDialog()
     check_high_quality->setChecked(app_settings->getHighQuality());
     check_formant_preserved->setChecked(app_settings->getPerserveFormatShape());
     check_enable_waveform->setChecked(app_settings->getShowWaveform());
+    check_enable_event_logging->setChecked(app_settings->getEventLoggingEnabled());
 
 
     connect(this, &QDialog::rejected, [this](){ releaseKeyboard(); });
@@ -198,6 +220,10 @@ SettingsDialog::SettingsDialog()
     connect(check_high_quality, &QAbstractButton::toggled, [this](bool checked){ emitCheckUseHighQualityChanged(checked); });
     connect(check_formant_preserved, &QAbstractButton::toggled, [this](bool checked){  emitCheckFormantPreservedChanged(checked); });
     connect(check_enable_waveform, &QAbstractButton::toggled, [this](bool checked){  emitCheckEnableWaveformChanged(checked); });
+    connect(check_enable_event_logging, &QAbstractButton::toggled, [this](bool checked){  emitCheckEnableEventLoggingChanged(checked); });
+    connect(lineedit_log_path, &QLineEdit::editingFinished, [this](){ emitCustomLogPathChanged(lineedit_log_path->text()); });
+    connect(button_browse_log_path, &QPushButton::clicked, this, &SettingsDialog::browseLogPath);
+    connect(button_reset_log_path, &QPushButton::clicked, this, &SettingsDialog::resetLogPath);
     connect(modifier_settings_pitch_spinbox, qOverload<int>(&QSpinBox::valueChanged), [this](int value){ emitPitchModifierValueChanged(value); });
     connect(modifier_settings_speed_spinbox, qOverload<int>(&QSpinBox::valueChanged), [this](int value){ emitSpeedModifierValueChanged(value); });
 
@@ -252,6 +278,39 @@ void SettingsDialog::emitCheckEnableWaveformChanged(bool enabled)
 {
     app_settings->setShowWaveform(enabled);
     emit checkEnableWaveformChanged(enabled);
+}
+
+void SettingsDialog::emitCheckEnableEventLoggingChanged(bool enabled)
+{
+    app_settings->setEventLoggingEnabled(enabled);
+    emit checkEnableEventLoggingChanged(enabled);
+}
+
+void SettingsDialog::emitCustomLogPathChanged(const QString &path)
+{
+    app_settings->setCustomLogPath(path);
+    emit customLogPathChanged(path);
+}
+
+void SettingsDialog::browseLogPath()
+{
+    QString currentPath = lineedit_log_path->text();
+    if (currentPath.isEmpty()) {
+        currentPath = EventLogger::getDefaultLogDirectory();
+    }
+    
+    QString dir = QFileDialog::getExistingDirectory(this, "Select Log Folder", currentPath,
+                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty()) {
+        lineedit_log_path->setText(dir);
+        emitCustomLogPathChanged(dir);
+    }
+}
+
+void SettingsDialog::resetLogPath()
+{
+    lineedit_log_path->clear();
+    emitCustomLogPathChanged(QString());
 }
 
 void SettingsDialog::emitPitchModifierValueChanged(int value)

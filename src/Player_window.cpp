@@ -40,6 +40,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
 
   settings = new AppSettings(this);
   settings_dialog = new SettingsDialog();
+  event_logger = new EventLogger(this);
+  event_logger->setCustomLogPath(settings->getCustomLogPath());
+  event_logger->setEnabled(settings->getEventLoggingEnabled());
   clearFocus();
   setFocusPolicy(Qt::NoFocus);
   audio_player = new AudioPlayer(this);
@@ -253,6 +256,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   {
       connect(widget_waveform, &WaveformWidget::barClicked, audio_player, &AudioPlayer::moveReadingPosition);
       connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), this, &PlayerWindow::moveReadingPosToBreakpoint);
+      connect(widget_waveform, qOverload<int>(&WaveformWidget::breakPointSet), [this](int position){ event_logger->logBreakpointSet(position); });
+      connect(widget_waveform, &WaveformWidget::breakPointRemoved, [this](){ event_logger->logBreakpointRemoved(); });
   }
 
   connect(settings_dialog, qOverload<int>(&SettingsDialog::pitchModifierValueChanged), [this](int value){ pitchModifierValue = value; });
@@ -267,6 +272,8 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(settings_dialog, qOverload<int>(&SettingsDialog::speedSliderKeyMinusChanged), [this](int key){ speedSliderKeyMinus = key; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::playbackSliderKeyPlusChanged), [this](int key){ playbackSliderKeyPlus = key; });
   connect(settings_dialog, qOverload<int>(&SettingsDialog::playbackSliderKeyMinusChanged), [this](int key){ playbackSliderKeyMinus = key; });
+  connect(settings_dialog, &SettingsDialog::checkEnableEventLoggingChanged, [this](bool enabled){ event_logger->setEnabled(enabled); });
+  connect(settings_dialog, &SettingsDialog::customLogPathChanged, [this](const QString &path){ event_logger->setCustomLogPath(path); });
 
 
   const QStringList music_directories = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
@@ -350,10 +357,14 @@ void PlayerWindow::openFile(const QFileInfo &file_info)
 {
   setWindowTitle(QStringLiteral("VPS Player [%1]").arg(file_info.fileName()));
   music_directory = file_info.canonicalPath();
-  audio_player->decodeFile(file_info.canonicalFilePath());
+  QString filePath = file_info.canonicalFilePath();
+  bool isFirstFile = current_file_path.isEmpty();
+  current_file_path = filePath;
+  audio_player->decodeFile(filePath);
   widget_waveform->resetBreakPoint();
   emit pitchValueChanged(0);
   emit playbackSpeedChanged(0);
+  event_logger->logFileLoaded(filePath, isFirstFile);
 }
 
 
@@ -371,6 +382,7 @@ void PlayerWindow::openFileFromSelector()
 // Start or resume audio playing
 void PlayerWindow::playAudio()
 {
+  int currentPosition = settings->getShowWaveform() ? widget_waveform->value() : progress_playing->value();
   if (audio_player->getStatus() == AudioPlayer::Stopped)
     {
       audio_player->startPlaying();
@@ -379,6 +391,7 @@ void PlayerWindow::playAudio()
     {
       audio_player->resumePlaying();
     }
+  event_logger->logPlay(currentPosition);
 }
 
 
@@ -410,7 +423,9 @@ void PlayerWindow::moveReadingPosToBreakpoint()
 // Pause audio playing
 void PlayerWindow::pauseAudio()
 {
+    int currentPosition = settings->getShowWaveform() ? widget_waveform->value() : progress_playing->value();
     audio_player->pausePlaying();
+    event_logger->logPause(currentPosition);
 }
 
 
@@ -424,8 +439,10 @@ void PlayerWindow::pauseAudioFromBreakpoint()
 // Stops audio playing
 void PlayerWindow::stopAudio()
 {
+    int currentPosition = settings->getShowWaveform() ? widget_waveform->value() : progress_playing->value();
     audio_player->stopPlaying();
     widget_waveform->resetBreakPoint();
+    event_logger->logStop(currentPosition);
 }
 
 // Moves reading position backward or forward (waveform). Parameter: position change in milliseconds
@@ -438,6 +455,7 @@ void PlayerWindow::moveReadingPosition()
     }
   else
     audio_player->moveReadingPosition(qMax(0, new_position));
+  event_logger->logWaveformClick(new_position);
 }
 
 // Moves reading position backward or forward (progress bar). Parameter: position change in milliseconds
@@ -452,9 +470,10 @@ void PlayerWindow::moveReadingPositionBar(int delta)
 
 void PlayerWindow::bfReadingPosition(int miliseconds)
 {
+    int new_position;
     if (settings->getShowWaveform())
     {
-        int new_position = widget_waveform->value() + miliseconds;
+        new_position = widget_waveform->value() + miliseconds;
         if (new_position >= widget_waveform->maximum())
           audio_player->stopPlaying();
         else
@@ -462,8 +481,10 @@ void PlayerWindow::bfReadingPosition(int miliseconds)
     }
     else
     {
+        new_position = progress_playing->value() + miliseconds;
         moveReadingPositionBar(miliseconds);
     }
+    event_logger->logSkip(miliseconds, qMax(0, new_position));
 }
 
 
@@ -510,6 +531,9 @@ void PlayerWindow::updatePitch(int pitch)
 {
   spinbox_pitch->setValue(pitch);
   audio_player->updatePitch(pitch);
+  if (pitch_value != pitch) {
+    event_logger->logPitchChange(pitch);
+  }
   pitch_value = pitch;
 }
 
@@ -545,6 +569,9 @@ void PlayerWindow::updateSpeed(int speed)
   qreal speed_ratio = qPow(qreal(2.0), speed / qreal(24.0));
   label_speed_value->setText(QStringLiteral("x %1").arg(speed_ratio, 0, 'f', 2));
   audio_player->updateSpeed(static_cast<double>(speed_ratio));
+  if (playback_speed != speed) {
+    event_logger->logSpeedChange(speed, static_cast<double>(speed_ratio));
+  }
   playback_speed = speed;
 }
 

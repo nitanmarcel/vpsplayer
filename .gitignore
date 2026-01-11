@@ -1,5 +1,5 @@
 .qmake.stash
 Makefile
-build_tmp/
+build/
 vpsplayer
 vpsplayer.pro.user

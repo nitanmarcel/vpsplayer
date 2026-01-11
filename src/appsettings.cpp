@@ -26,6 +26,8 @@ AppSettings::AppSettings(QObject *parent)
     speedSliderKeyMinus = settings->value("speed_slider_key_minus", Qt::Key_A).value<int>();
     playbackSliderKeyPlus = settings->value("playback_slider_key_plus", Qt::Key_E).value<int>();
     playbackSliderKeyMinus = settings->value("playback_slider_key_minus", Qt::Key_Q).value<int>();
+    eventLoggingEnabled = settings->value("event_logging_enabled", false).value<bool>();
+    customLogPath = settings->value("custom_log_path", QString()).value<QString>();
 
 }
 
@@ -151,6 +153,20 @@ void AppSettings::setPlaybackSliderKeyMinus(int key)
     settings->sync();
 }
 
+void AppSettings::setEventLoggingEnabled(bool enabled)
+{
+    eventLoggingEnabled = enabled;
+    settings->setValue("event_logging_enabled", enabled);
+    settings->sync();
+}
+
+void AppSettings::setCustomLogPath(const QString &path)
+{
+    customLogPath = path;
+    settings->setValue("custom_log_path", path);
+    settings->sync();
+}
+
 QByteArray AppSettings::getGeometry()
 {
     return geometry;
@@ -234,4 +250,14 @@ int AppSettings::getPlaybackSliderKeyPlus()
 int AppSettings::getPlaybackSliderKeyMinus()
 {
     return playbackSliderKeyMinus;
+}
+
+bool AppSettings::getEventLoggingEnabled()
+{
+    return eventLoggingEnabled;
+}
+
+QString AppSettings::getCustomLogPath()
+{
+    return customLogPath;
 }

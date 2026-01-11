@@ -16,11 +16,12 @@ qt5_add_resources(QRC_FILES styles.qrc icons.qrc)
 
 add_executable(vpsplayer WIN32 MACOSX_BUNDLE
     ${QRC_FILES}
-    
+
     src/Audio_player.cpp src/Audio_player.h
     src/Player_window.cpp src/Player_window.h
     src/Playing_progress.cpp src/Playing_progress.h
     src/appsettings.cpp src/appsettings.h
+    src/eventlogger.cpp src/eventlogger.h
     src/keyedit.cpp src/keyedit.h
     src/main.cpp
     src/menustyle.cpp src/menustyle.h

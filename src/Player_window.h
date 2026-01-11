@@ -22,6 +22,7 @@
 #include "waveformwidget.h"
 
 #include "Audio_player.h"
+#include "eventlogger.h"
 #include "Playing_progress.h"
 #include "settingsdialog.h"
 #include "appsettings.h"
@@ -61,6 +62,8 @@ private:
   bool key_modifier;
 
   AppSettings *settings;
+  EventLogger *event_logger;
+  QString current_file_path;
   
 public:
   PlayerWindow(const QIcon &app_icon, const QString &filename = QString()); // Constructor
