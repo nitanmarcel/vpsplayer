@@ -32,6 +32,8 @@ public:
     void logWaveformClick(int positionMs);
     void logBreakpointSet(int positionMs);
     void logBreakpointRemoved();
+    void logAltPause(int positionMs, bool jumpedToBreakpoint);
+    void logAltResume(int positionMs, bool jumpedToBreakpoint);
 
 private:
     bool m_enabled;

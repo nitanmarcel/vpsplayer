@@ -214,3 +214,21 @@ void EventLogger::logBreakpointRemoved()
 {
     writeLogEntry("BREAKPOINT_REMOVED");
 }
+
+void EventLogger::logAltPause(int positionMs, bool jumpedToBreakpoint)
+{
+    QString details = QString("Position: %1").arg(formatPosition(positionMs));
+    if (jumpedToBreakpoint) {
+        details += " | Jumped to breakpoint";
+    }
+    writeLogEntry("ALT_PAUSE", details);
+}
+
+void EventLogger::logAltResume(int positionMs, bool jumpedToBreakpoint)
+{
+    QString details = QString("Position: %1").arg(formatPosition(positionMs));
+    if (jumpedToBreakpoint) {
+        details += " | Jumped to breakpoint";
+    }
+    writeLogEntry("ALT_RESUME", details);
+}

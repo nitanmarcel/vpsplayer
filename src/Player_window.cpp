@@ -397,18 +397,27 @@ void PlayerWindow::playAudio()
 
 void PlayerWindow::playAudioBreakpoint()
 {
+  int currentPosition = settings->getShowWaveform() ? widget_waveform->value() : progress_playing->value();
+  bool hasBreakpoint = widget_waveform->getBreakPoint() != 0;
+  bool willJumpToBreakpoint = false;
+
   if (audio_player->getStatus() == AudioPlayer::Stopped)
     {
       audio_player->startPlaying();
-      if (settings->getAltPauseKeyIndex() == 1)
+      if (settings->getAltPauseKeyIndex() == 1) {
         PlayerWindow::moveReadingPosToBreakpoint();
+        willJumpToBreakpoint = hasBreakpoint;
+      }
     }
   else
     {
       audio_player->resumePlaying();
-      if (settings->getAltPauseKeyIndex() == 0)
+      if (settings->getAltPauseKeyIndex() == 0) {
         PlayerWindow::moveReadingPosToBreakpoint();
+        willJumpToBreakpoint = hasBreakpoint;
+      }
     }
+  event_logger->logAltResume(currentPosition, willJumpToBreakpoint);
 }
 
 void PlayerWindow::moveReadingPosToBreakpoint()
@@ -431,9 +440,16 @@ void PlayerWindow::pauseAudio()
 
 void PlayerWindow::pauseAudioFromBreakpoint()
 {
+    int currentPosition = settings->getShowWaveform() ? widget_waveform->value() : progress_playing->value();
+    bool hasBreakpoint = widget_waveform->getBreakPoint() != 0;
+    bool willJumpToBreakpoint = false;
+
     audio_player->pausePlaying();
-    if (settings->getAltPauseKeyIndex() == 1)
+    if (settings->getAltPauseKeyIndex() == 1) {
       PlayerWindow::moveReadingPosToBreakpoint();
+      willJumpToBreakpoint = hasBreakpoint;
+    }
+    event_logger->logAltPause(currentPosition, willJumpToBreakpoint);
 }
 
 // Stops audio playing
