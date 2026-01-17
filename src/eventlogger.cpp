@@ -185,7 +185,11 @@ void EventLogger::logStop(int positionMs)
 
 void EventLogger::logSpeedChange(int speedValue, double speedRatio)
 {
-    writeLogEntry("SPEED_CHANGE", QString("Value: %1, Ratio: x%2").arg(speedValue).arg(speedRatio, 0, 'f', 2));
+    double percentage = (speedRatio - 1.0) * 100.0;
+    writeLogEntry("SPEED_CHANGE", QString("Value: %1, Ratio: x%2, Perc: %3%")
+        .arg(speedValue)
+        .arg(speedRatio, 0, 'f', 4)
+        .arg(percentage, 0, 'f', 2));
 }
 
 void EventLogger::logPitchChange(int pitchValue)
