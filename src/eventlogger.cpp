@@ -19,7 +19,7 @@ EventLogger::~EventLogger()
 
 void EventLogger::generateSessionLogFileName()
 {
-    QString timestamp = m_sessionStartTime.toString("yyyy-MM-dd_HH-mm-ss");
+    QString timestamp = m_sessionStartTime.toString("yyyy-MM-dd_HH-mm-ss.zzz");
     m_sessionLogFileName = QString("vpsplayer_%1.log").arg(timestamp);
 }
 
@@ -107,7 +107,7 @@ bool EventLogger::openLogFile()
 
     m_stream.setDevice(&m_logFile);
     
-    m_stream << "Session started: " << m_sessionStartTime.toString(Qt::ISODate) << "\n";
+    m_stream << "Session started: " << m_sessionStartTime.toString(Qt::ISODateWithMs) << "\n";
     m_stream.flush();
     
     return true;
@@ -122,7 +122,7 @@ void EventLogger::closeLogFile()
 
 QString EventLogger::getCurrentTimestamp() const
 {
-    return QDateTime::currentDateTime().toString(Qt::ISODate);
+    return QDateTime::currentDateTime().toString(Qt::ISODateWithMs);
 }
 
 QString EventLogger::formatPosition(int positionMs) const

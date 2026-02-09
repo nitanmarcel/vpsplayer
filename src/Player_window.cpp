@@ -251,6 +251,9 @@ PlayerWindow::PlayerWindow(const QIcon &app_icon, const QString &filename)
   connect(audio_player, &AudioPlayer::audioOutputError, this, &PlayerWindow::displayAudioDeviceError);
   connect(audio_player, &AudioPlayer::bufferReady, widget_waveform, &WaveformWidget::onBufferReady);
   connect(audio_player, &AudioPlayer::decodingFinished, widget_waveform, &WaveformWidget::onDecodingFinished);
+  connect(audio_player, &AudioPlayer::decodingFinished, [this](){
+      event_logger->logPlay(0);
+  });
   
   if (settings->getShowWaveform())
   {
